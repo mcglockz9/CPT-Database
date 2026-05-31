@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPT Code Database — Orthopaedic Sports Medicine</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #0f1117;
+  color: #e8eaf0;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* HEADER */
+#topbar {
+  background: #181c27;
+  border-bottom: 1px solid #2a2f42;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.logo {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: #4f8ef7;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.logo span { color: #555d7a; }
+#search {
+  flex: 1;
+  min-width: 160px;
+  background: #0f1117;
+  border: 1px solid #2a2f42;
+  border-radius: 6px;
+  color: #e8eaf0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 7px 12px;
+  outline: none;
+}
+#search::placeholder { color: #555d7a; }
+#search:focus { border-color: #4f8ef7; }
+#catFilter {
+  background: #0f1117;
+  border: 1px solid #2a2f42;
+  border-radius: 6px;
+  color: #e8eaf0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 7px 10px;
+  outline: none;
+  cursor: pointer;
+}
+#favBtn {
+  background: #1e2333;
+  border: 1px solid #2a2f42;
+  border-radius: 6px;
+  color: #e8eaf0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 7px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+#favBtn.active { background: rgba(240,168,50,0.12); border-color: #c88a20; color: #f0a832; }
+
+/* STATS */
+#statsBar {
+  padding: 8px 16px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  background: #181c27;
+  border-bottom: 1px solid #2a2f42;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid #2a2f42;
+  color: #8b91a8;
+  background: #0f1117;
+  cursor: pointer;
+}
+.pill strong { font-weight: 600; }
+
+/* ROW LAYOUT — use divs not table */
+#listWrap {
+  padding: 0 0 60px 0;
+}
+
+.row-header {
+  display: grid;
+  grid-template-columns: 36px 90px 150px 1fr;
+  gap: 0;
+  padding: 8px 16px;
+  background: #0f1117;
+  border-bottom: 1px solid #2a2f42;
+  position: sticky;
+  top: 57px;
+  z-index: 40;
+}
+.row-header span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #555d7a;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 36px 90px 150px 1fr;
+  gap: 0;
+  padding: 0;
+  border-bottom: 1px solid #1e2333;
+  align-items: start;
+}
+.row:hover { background: #181c27; }
+
+.cell {
+  padding: 9px 10px;
+  align-self: start;
+}
+.cell-fav {
+  padding: 6px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 9px;
+}
+.cell-code {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: #e8eaf0;
+  white-space: nowrap;
+}
+.cell-cat { }
+.cat-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.cell-desc {
+  font-size: 13px;
+  color: #8b91a8;
+  line-height: 1.5;
+  word-break: break-word;
+}
+.note-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  background: rgba(79,142,247,0.12);
+  color: #7aabff;
+  border: 1px solid rgba(79,142,247,0.25);
+}
+
+.fav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555d7a;
+  font-size: 16px;
+  line-height: 1;
+  padding: 2px;
+  transition: color 0.15s;
+}
+.fav-btn:hover { color: #f0a832; }
+.fav-btn.active { color: #f0a832; }
+
+#empty {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+  color: #555d7a;
+  font-size: 14px;
+}
+
+#countRow {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  padding: 8px 16px;
+  font-size: 11px;
+  color: #555d7a;
+  background: #0f1117;
+  border-top: 1px solid #2a2f42;
+}
+
+@media (max-width: 580px) {
+  .row, .row-header {
+    grid-template-columns: 32px 72px 100px 1fr;
+  }
+  .cell { padding: 8px 6px; }
+  .cat-badge { font-size: 10px; padding: 2px 5px; }
+  .cell-code { font-size: 12px; }
+  .cell-desc { font-size: 12px; }
+}
+@media (max-width: 420px) {
+  .row, .row-header {
+    grid-template-columns: 30px 68px 1fr;
+  }
+  .cell-cat { display: none; }
+  .row-header .hdr-cat { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="logo">CPT<span>/</span>OrthoSports</div>
+  <input id="search" type="text" placeholder="ACL, rotator cuff, Bankart, Tommy John, SLAP..." oninput="filter()" autocomplete="off" spellcheck="false" />
+  <select id="catFilter" onchange="filter()">
+    <option value="">All categories</option>
+    <option value="General">General</option>
+    <option value="Hardware Removal">Hardware Removal</option>
+    <option value="Shoulder">Shoulder</option>
+    <option value="Arthroplasty">Arthroplasty</option>
+    <option value="Navigation & Planning">Navigation & Planning</option>
+    <option value="Humerus & Elbow">Humerus & Elbow</option>
+    <option value="Forearm & Wrist">Forearm & Wrist</option>
+    <option value="Hand & Fingers">Hand & Fingers</option>
+    <option value="Pelvis & Hip">Pelvis & Hip</option>
+    <option value="Femur & Knee">Femur & Knee</option>
+    <option value="Leg & Ankle">Leg & Ankle</option>
+    <option value="Foot & Toes">Foot & Toes</option>
+    <option value="Arthroscopy">Arthroscopy</option>
+    <option value="Neuroplasty">Neuroplasty</option>
+  </select>
+  <button id="favBtn" onclick="toggleFavMode()">☆ My codes</button>
+</div>
+
+<div id="statsBar"></div>
+
+<div id="listWrap">
+  <div class="row-header">
+    <span></span>
+    <span>Code</span>
+    <span class="hdr-cat">Category</span>
+    <span>Description</span>
+  </div>
+  <div id="rows"></div>
+  <div id="empty">🔍 No codes match your search.</div>
+</div>
+
+<div id="countRow"></div>
+
+<script>
+const CAT_COLORS = {
+  "General":              {bg:"rgba(24,95,165,0.2)",   color:"#7aabff"},
+  "Hardware Removal":     {bg:"rgba(80,60,140,0.22)",  color:"#c4a8f5"},
+  "Shoulder":             {bg:"rgba(59,109,17,0.22)",  color:"#7ecb5a"},
+  "Arthroplasty":         {bg:"rgba(95,94,90,0.22)",   color:"#b0ae9e"},
+  "Navigation & Planning":{bg:"rgba(15,110,86,0.22)",  color:"#5ecfab"},
+  "Humerus & Elbow":      {bg:"rgba(133,79,11,0.22)",  color:"#e8a85a"},
+  "Forearm & Wrist":      {bg:"rgba(153,60,29,0.22)",  color:"#f0876a"},
+  "Hand & Fingers":       {bg:"rgba(153,53,86,0.22)",  color:"#f07aaa"},
+  "Pelvis & Hip":         {bg:"rgba(83,74,183,0.22)",  color:"#a99ef5"},
+  "Femur & Knee":         {bg:"rgba(8,80,65,0.28)",    color:"#4ecfaa"},
+  "Leg & Ankle":          {bg:"rgba(60,52,137,0.22)",  color:"#8e86e8"},
+  "Foot & Toes":          {bg:"rgba(58,95,58,0.22)",   color:"#7ecb7e"},
+  "Arthroscopy":          {bg:"rgba(99,56,12,0.28)",   color:"#d4935a"},
+  "Neuroplasty":          {bg:"rgba(114,36,62,0.22)",  color:"#e87aaa"},
+};
+
+const ALL = [
+  ["20670","Hardware Removal","Removal of implant; superficial (eg, wire, pin, screw, metal band)","Use for superficial hardware removal anywhere in the body","hardware removal implant superficial wire pin screw metal band plate superficial removal"],
+  ["20680","Hardware Removal","Removal of implant; deep (eg, buried wire, pin, screw, metal band, nail, rod, or plate)","Best general-purpose code for deep hardware removal anywhere in the body — preferred over site-specific foreign body codes for elective implant removal","hardware removal implant deep wire pin screw nail rod plate buried deep removal elective implant"],
+  ["20520","General","Removal of foreign body in muscle or tendon sheath; simple","","foreign body muscle tendon simple removal"],
+  ["20525","General","Removal of foreign body in muscle or tendon sheath; deep or complicated","","foreign body muscle tendon deep complicated removal"],
+  ["20920","General","Fascia lata graft; by stripper","","fascia lata graft harvest ITB iliotibial band stripper"],
+  ["20922","General","Fascia lata graft; by incision and area exposure, complex or sheet","","fascia lata graft harvest ITB iliotibial band incision"],
+  ["20924","General","Tendon graft, from a distance","","tendon graft palmaris plantaris toe extensor harvest donor"],
+  ["23030","Shoulder","Incision and drainage, shoulder area; deep abscess or hematoma","","I&D shoulder abscess hematoma drainage infection"],
+  ["23031","Shoulder","Incision and drainage, shoulder area; infected bursa","","I&D shoulder bursa bursitis drainage infection"],
+  ["23035","Shoulder","Incision, bone cortex; shoulder area","","osteomyelitis bone abscess shoulder cortex incision"],
+  ["23040","Shoulder","Arthrotomy, glenohumeral joint, including exploration, drainage, or removal of foreign body","","open shoulder joint arthrotomy GH glenohumeral drainage"],
+  ["23044","Shoulder","Arthrotomy, acromioclavicular, sternoclavicular joint, including exploration, drainage, or removal of foreign body","","open AC SC joint arthrotomy drainage"],
+  ["23101","Shoulder","Arthrotomy, acromioclavicular joint or sternoclavicular joint, including biopsy and/or excision of torn cartilage","","open AC SC joint cartilage biopsy excision"],
+  ["23105","Shoulder","Arthrotomy; glenohumeral joint, with synovectomy, with or without biopsy","","open GH glenohumeral synovectomy synovitis"],
+  ["23106","Shoulder","Arthrotomy; sternoclavicular joint, with synovectomy, with or without biopsy","","open SC sternoclavicular synovectomy synovitis"],
+  ["23107","Shoulder","Arthrotomy, glenohumeral joint, with joint exploration, with or without removal of loose or foreign body","","open GH glenohumeral exploration loose body"],
+  ["23120","Shoulder","Claviculectomy; partial","","clavicle excision resection partial distal AC joint"],
+  ["23125","Shoulder","Claviculectomy; total","","clavicle excision resection total"],
+  ["23130","Shoulder","Acromioplasty or acromionectomy, partial, with or without coracoacromial ligament release","","subacromial decompression SAD acromioplasty open impingement CA ligament"],
+  ["23330","Shoulder","Removal of foreign body, shoulder; subcutaneous","","foreign body shoulder removal hardware"],
+  ["23333","Shoulder","Removal of foreign body, shoulder; deep","","foreign body shoulder deep removal hardware"],
+  ["23395","Shoulder","Muscle transfer, any type, shoulder or upper arm; single","","muscle transfer shoulder upper arm single"],
+  ["23397","Shoulder","Muscle transfer, any type, shoulder or upper arm; multiple","","muscle transfer shoulder upper arm multiple"],
+  ["23405","Shoulder","Tenotomy, shoulder area; single tendon","","tenotomy shoulder single tendon release"],
+  ["23406","Shoulder","Tenotomy, shoulder area; multiple tendons","","tenotomy shoulder multiple tendons release"],
+  ["23410","Shoulder","Repair of ruptured musculotendinous cuff; open acute","","rotator cuff repair open acute tear supraspinatus infraspinatus RCR transosseous tendon to bone"],
+  ["23412","Shoulder","Repair of ruptured musculotendinous cuff; open chronic","","rotator cuff repair open chronic tear supraspinatus infraspinatus RCR massive irreparable patch graft augmentation superior capsule reconstruction SCR"],
+  ["23415","Shoulder","Coracoacromial ligament release, with or without acromioplasty","","CA ligament release coracoacromial acromioplasty impingement open"],
+  ["23420","Shoulder","Reconstruction of complete shoulder (rotator) cuff avulsion, chronic (includes acromioplasty)","","rotator cuff reconstruction massive irreparable cuff tear avulsion chronic RCR"],
+  ["23430","Shoulder","Tenodesis of long tendon of biceps","","biceps tenodesis long head LHBT open subpectoral suprapectoral"],
+  ["23440","Shoulder","Resection or transplantation of long tendon of biceps","","biceps resection tenotomy transplantation LHBT"],
+  ["23450","Shoulder","Capsulorrhaphy, anterior; Putti-Platt or Magnuson type","","Putti-Platt Magnuson anterior capsulorrhaphy instability open shoulder stabilization"],
+  ["23455","Shoulder","Capsulorrhaphy, anterior; with labral repair (eg, Bankart procedure)","","Bankart repair open anterior instability labrum labral repair shoulder stabilization"],
+  ["23460","Shoulder","Capsulorrhaphy, anterior, any type; with bone block","","bone block anterior stabilization shoulder instability Latarjet Bristow open"],
+  ["23462","Shoulder","Capsulorrhaphy, anterior, any type; with coracoid process transfer","","Latarjet coracoid transfer anterior instability shoulder open Bristow"],
+  ["23465","Shoulder","Capsulorrhaphy, glenohumeral joint, posterior, with or without bone block","","posterior capsulorrhaphy instability shoulder open stabilization bone block"],
+  ["23466","Shoulder","Capsulorrhaphy, glenohumeral joint, any type multi-directional instability","","MDI multidirectional instability capsulorrhaphy shoulder open Neer stabilization"],
+  ["23480","Shoulder","Osteotomy, clavicle, with or without internal fixation","","clavicle osteotomy malunion nonunion fixation"],
+  ["23485","Shoulder","Osteotomy, clavicle, with bone graft for nonunion or malunion","","clavicle osteotomy nonunion malunion bone graft"],
+  ["23515","Shoulder","Open treatment of clavicular fracture, with or without internal or external fixation","","clavicle fracture ORIF open reduction internal fixation plate"],
+  ["23530","Shoulder","Open treatment of sternoclavicular dislocation, acute or chronic","","sternoclavicular SC dislocation open treatment acute chronic"],
+  ["23532","Shoulder","Open treatment of sternoclavicular dislocation, with fascial graft","","sternoclavicular SC dislocation open fascial graft reconstruction"],
+  ["23550","Shoulder","Open treatment of acromioclavicular dislocation, acute or chronic","","AC joint acromioclavicular dislocation separation ORIF open acute chronic"],
+  ["23552","Shoulder","Open treatment of acromioclavicular dislocation, with fascial graft","","AC joint acromioclavicular dislocation separation fascial graft reconstruction"],
+  ["23615","Shoulder","Open treatment of proximal humeral fracture, with or without internal or external fixation","","proximal humerus fracture ORIF open reduction internal fixation plate surgical neck anatomical neck"],
+  ["23630","Shoulder","Open treatment of greater humeral tuberosity fracture, includes internal fixation","","greater tuberosity fracture ORIF open reduction fixation"],
+  ["23660","Shoulder","Open treatment of acute shoulder dislocation","","shoulder dislocation acute open treatment reduction"],
+  ["23670","Shoulder","Open treatment of shoulder dislocation, with fracture of greater humeral tuberosity","","shoulder dislocation greater tuberosity fracture open treatment"],
+  ["23680","Shoulder","Open treatment of shoulder dislocation, with surgical or anatomical neck fracture","","shoulder dislocation fracture dislocation open treatment surgical neck"],
+  ["23470","Arthroplasty","Hemiarthroplasty, glenohumeral joint","","hemiarthroplasty shoulder half partial replacement humeral head ream run"],
+  ["23472","Arthroplasty","Total shoulder arthroplasty, glenohumeral joint (anatomic or reverse total shoulder)","","total shoulder arthroplasty TSA RTSA reverse shoulder replacement anatomic RSA"],
+  ["23473","Arthroplasty","Revision of total shoulder arthroplasty; humeral or glenoid component","","revision total shoulder arthroplasty TSA humeral glenoid component single"],
+  ["23474","Arthroplasty","Revision of total shoulder arthroplasty; humeral and glenoid components","","revision total shoulder arthroplasty TSA humeral glenoid both components"],
+  ["0054T","Navigation & Planning","Computer-assisted musculoskeletal surgical navigational orthopedic procedure, with image-guidance (add-on) — used for Blueprint/PSI 3D planning","","Blueprint PSI navigation computer assisted 3D planning Materialise image guided shoulder arthroplasty"],
+  ["24006","Humerus & Elbow","Arthrotomy of the elbow, with capsular excision for capsular release","","elbow capsular release contracture stiffness arthrotomy open"],
+  ["24101","Humerus & Elbow","Arthrotomy, elbow; with joint exploration, with or without biopsy, with or without removal of loose or foreign body","","open elbow joint exploration loose body foreign body biopsy"],
+  ["24102","Humerus & Elbow","Arthrotomy, elbow; with synovectomy","","open elbow synovectomy synovitis"],
+  ["24105","Humerus & Elbow","Excision, olecranon bursa","","olecranon bursitis bursa excision elbow"],
+  ["24200","Humerus & Elbow","Removal of foreign body, upper arm or elbow area; subcutaneous","","foreign body elbow upper arm removal subcutaneous hardware"],
+  ["24201","Humerus & Elbow","Removal of foreign body, upper arm or elbow area; deep","","foreign body elbow upper arm removal deep hardware"],
+  ["24301","Humerus & Elbow","Muscle or tendon transfer, any type, upper arm or elbow, single","","muscle tendon transfer elbow upper arm single"],
+  ["24305","Humerus & Elbow","Tendon lengthening, upper arm or elbow, each tendon","","tendon lengthening elbow upper arm contracture"],
+  ["24310","Humerus & Elbow","Tenotomy, open, elbow to shoulder, each tendon","","tenotomy open elbow shoulder tendon release"],
+  ["24332","Humerus & Elbow","Tenolysis, triceps","","triceps tenolysis adhesion elbow"],
+  ["24340","Humerus & Elbow","Tenodesis of biceps tendon at elbow","","biceps tenodesis elbow distal"],
+  ["24341","Humerus & Elbow","Repair, tendon or muscle, upper arm or elbow, each tendon or muscle, primary or secondary","","tendon muscle repair elbow upper arm primary secondary"],
+  ["24342","Humerus & Elbow","Reinsertion of ruptured biceps or triceps tendon, distal, with or without tendon graft","","distal biceps repair rupture reinsertion triceps tendon graft elbow single incision double incision endobutton cortical button suture anchor"],
+  ["24343","Humerus & Elbow","Repair lateral collateral ligament, elbow, with local tissue","","LCL lateral collateral ligament elbow repair local tissue LUCL"],
+  ["24344","Humerus & Elbow","Reconstruction lateral collateral ligament, elbow, with tendon graft","","LCL LUCL lateral collateral ligament elbow reconstruction tendon graft"],
+  ["24345","Humerus & Elbow","Repair medial collateral ligament, elbow, with local tissue","","MCL UCL medial collateral ulnar collateral ligament elbow repair local tissue"],
+  ["24346","Humerus & Elbow","Reconstruction medial collateral ligament, elbow, with tendon graft","","MCL UCL Tommy John ulnar collateral ligament elbow reconstruction tendon graft docking technique DANE TJ palmaris gracilis"],
+  ["24357","Humerus & Elbow","Tenotomy, elbow, lateral or medial; percutaneous","","tennis elbow golfer elbow epicondylitis lateral medial tenotomy percutaneous"],
+  ["24358","Humerus & Elbow","Tenotomy, elbow, lateral or medial; debridement, soft tissue and/or bone, open","","tennis elbow golfer elbow epicondylitis lateral medial debridement open"],
+  ["24359","Humerus & Elbow","Tenotomy, elbow, lateral or medial; debridement with repair or reattachment","","tennis elbow golfer elbow epicondylitis lateral medial debridement repair reattachment open"],
+  ["24515","Humerus & Elbow","Open treatment of humeral shaft fracture with plate/screws","","humeral shaft fracture ORIF open reduction plate screws fixation"],
+  ["24516","Humerus & Elbow","Treatment of humeral shaft fracture, with insertion of intramedullary implant","","humeral shaft fracture IMN intramedullary nail rod implant"],
+  ["24545","Humerus & Elbow","Open treatment of humeral supracondylar or transcondylar fracture; without intercondylar extension","","supracondylar transcondylar humerus fracture ORIF open fixation pediatric"],
+  ["24546","Humerus & Elbow","Open treatment of humeral supracondylar or transcondylar fracture; with intercondylar extension","","supracondylar transcondylar intercondylar humerus fracture ORIF open fixation"],
+  ["24575","Humerus & Elbow","Open treatment of humeral epicondylar fracture, medial or lateral","","epicondyle fracture medial lateral humerus ORIF open fixation"],
+  ["24579","Humerus & Elbow","Open treatment of humeral condylar fracture, medial or lateral","","condyle fracture medial lateral humerus ORIF open fixation"],
+  ["24586","Humerus & Elbow","Open treatment of periarticular fracture and/or dislocation of the elbow","","elbow fracture dislocation periarticular terrible triad ORIF open"],
+  ["24605","Humerus & Elbow","Treatment of closed elbow dislocation; requiring anesthesia","","elbow dislocation closed reduction anesthesia"],
+  ["24615","Humerus & Elbow","Open treatment of acute or chronic elbow dislocation","","elbow dislocation open acute chronic treatment"],
+  ["24620","Humerus & Elbow","Closed treatment of Monteggia type of fracture dislocation at elbow, with manipulation","","Monteggia fracture dislocation elbow closed reduction ulna radial head"],
+  ["24635","Humerus & Elbow","Open treatment of Monteggia type of fracture dislocation at elbow","","Monteggia fracture dislocation elbow open ORIF ulna radial head"],
+  ["24665","Humerus & Elbow","Open treatment of radial head or neck fracture","","radial head neck fracture ORIF open fixation excision"],
+  ["24666","Humerus & Elbow","Open treatment of radial head or neck fracture; with radial head prosthetic replacement","","radial head neck fracture prosthesis replacement ORIF open arthroplasty"],
+  ["24685","Humerus & Elbow","Open treatment of ulnar fracture, proximal end (eg, olecranon or coronoid process)","","olecranon coronoid ulna fracture ORIF open fixation proximal"],
+  ["25020","Forearm & Wrist","Decompression fasciotomy, forearm and/or wrist, flexor OR extensor compartment; without debridement","","forearm wrist fasciotomy compartment syndrome decompression flexor extensor"],
+  ["25023","Forearm & Wrist","Decompression fasciotomy, forearm and/or wrist, flexor OR extensor compartment; with debridement","","forearm wrist fasciotomy compartment syndrome decompression debridement flexor extensor"],
+  ["25024","Forearm & Wrist","Decompression fasciotomy, forearm and/or wrist, flexor AND extensor compartment; without debridement","","forearm wrist fasciotomy compartment syndrome decompression both compartments"],
+  ["25025","Forearm & Wrist","Decompression fasciotomy, forearm and/or wrist, flexor AND extensor compartment; with debridement","","forearm wrist fasciotomy compartment syndrome decompression debridement both compartments"],
+  ["25028","Forearm & Wrist","Incision and drainage, forearm and/or wrist; deep abscess or hematoma","","I&D forearm wrist abscess hematoma drainage"],
+  ["25031","Forearm & Wrist","Incision and drainage, forearm and/or wrist; bursa","","I&D forearm wrist bursa bursitis drainage"],
+  ["25035","Forearm & Wrist","Incision, deep, bone cortex, forearm and/or wrist","","osteomyelitis bone abscess forearm wrist cortex"],
+  ["25040","Forearm & Wrist","Arthrotomy, radiocarpal or midcarpal joint, with exploration, drainage, or removal of foreign body","","open wrist joint radiocarpal midcarpal arthrotomy drainage exploration"],
+  ["25260","Forearm & Wrist","Repair, tendon or muscle, flexor, forearm and/or wrist; primary, single","","flexor tendon repair forearm wrist primary FDP FDS"],
+  ["25263","Forearm & Wrist","Repair, tendon or muscle, flexor, forearm and/or wrist; secondary, single","","flexor tendon repair forearm wrist secondary FDP FDS"],
+  ["25265","Forearm & Wrist","Repair, tendon or muscle, flexor, forearm and/or wrist; secondary, with free graft","","flexor tendon repair forearm wrist secondary free graft FDP FDS"],
+  ["25270","Forearm & Wrist","Repair, tendon or muscle, extensor, forearm and/or wrist; primary, single","","extensor tendon repair forearm wrist primary EDC"],
+  ["25272","Forearm & Wrist","Repair, tendon or muscle, extensor, forearm and/or wrist; secondary, single","","extensor tendon repair forearm wrist secondary EDC"],
+  ["25274","Forearm & Wrist","Repair, tendon or muscle, extensor, forearm and/or wrist; secondary, with free graft","","extensor tendon repair forearm wrist secondary free graft"],
+  ["25275","Forearm & Wrist","Repair, tendon sheath, extensor, forearm and/or wrist, with free graft","","extensor carpi ulnaris ECU subluxation tendon sheath repair graft wrist"],
+  ["25320","Forearm & Wrist","Capsulorrhaphy or reconstruction, wrist, open","","wrist instability capsulodesis ligament repair SLAC DISI VISI carpal"],
+  ["25337","Forearm & Wrist","Reconstruction for stabilization of unstable distal ulna or distal radioulnar joint","","DRUJ distal radioulnar joint instability reconstruction stabilization ulna"],
+  ["25431","Forearm & Wrist","Repair of nonunion of carpal bone (excluding carpal scaphoid)","","carpal bone nonunion repair fixation graft lunate triquetrum capitate"],
+  ["25440","Forearm & Wrist","Repair of nonunion, scaphoid carpal bone","","scaphoid nonunion repair bone graft fixation navicular wrist Herbert"],
+  ["25515","Forearm & Wrist","Open treatment of radial shaft fracture, includes internal fixation","","radius shaft fracture ORIF open reduction plate screws fixation"],
+  ["25525","Forearm & Wrist","Open treatment of radial shaft fracture and closed treatment of distal radioulnar joint dislocation (Galeazzi)","","Galeazzi fracture dislocation radius DRUJ closed ORIF"],
+  ["25526","Forearm & Wrist","Open treatment of radial shaft fracture and open treatment of distal radioulnar joint dislocation (Galeazzi)","","Galeazzi fracture dislocation radius DRUJ open ORIF TFCC"],
+  ["25545","Forearm & Wrist","Open treatment of ulnar shaft fracture, includes internal fixation","","ulna shaft fracture ORIF open reduction plate screws fixation"],
+  ["25574","Forearm & Wrist","Open treatment of radial AND ulnar shaft fractures; of radius OR ulna","","both bone forearm fracture ORIF radius ulna open plate"],
+  ["25575","Forearm & Wrist","Open treatment of radial AND ulnar shaft fractures; of radius AND ulna","","both bone forearm fracture ORIF radius and ulna open plate"],
+  ["25606","Forearm & Wrist","Percutaneous skeletal fixation of distal radial fracture","","distal radius fracture percutaneous pinning K-wire fixation Colles"],
+  ["25607","Forearm & Wrist","Open treatment of distal radial extra-articular fracture, with internal fixation","","distal radius fracture ORIF extra-articular open plate Colles"],
+  ["25608","Forearm & Wrist","Open treatment of distal radial intra-articular fracture; with internal fixation of 2 fragments","","distal radius fracture ORIF intra-articular open plate 2 fragments Barton"],
+  ["25609","Forearm & Wrist","Open treatment of distal radial intra-articular fracture; with internal fixation of 3 or more fragments","","distal radius fracture ORIF intra-articular open plate 3 fragments comminuted"],
+  ["25628","Forearm & Wrist","Open treatment of carpal scaphoid fracture, includes internal fixation","","scaphoid fracture ORIF open Herbert screw navicular wrist fixation"],
+  ["25645","Forearm & Wrist","Open treatment of carpal bone fracture (other than scaphoid), each bone","","carpal bone fracture ORIF lunate triquetrum capitate hamate trapezium open"],
+  ["25651","Forearm & Wrist","Percutaneous skeletal fixation of ulnar styloid fracture","","ulnar styloid fracture percutaneous pinning fixation K-wire"],
+  ["25652","Forearm & Wrist","Open treatment of ulnar styloid fracture","","ulnar styloid fracture ORIF open fixation"],
+  ["25670","Forearm & Wrist","Open treatment of radiocarpal or intercarpal dislocation","","wrist dislocation radiocarpal intercarpal open treatment perilunate"],
+  ["25671","Forearm & Wrist","Percutaneous skeletal fixation of distal radioulnar dislocation","","DRUJ distal radioulnar dislocation percutaneous fixation pinning"],
+  ["25676","Forearm & Wrist","Open treatment of distal radioulnar dislocation, acute or chronic","","DRUJ distal radioulnar dislocation open treatment acute chronic"],
+  ["25685","Forearm & Wrist","Open treatment of trans-scaphoperilunar type of fracture dislocation","","trans-scaphoperilunar perilunate fracture dislocation open ORIF wrist"],
+  ["25695","Forearm & Wrist","Open treatment of lunate dislocation","","lunate dislocation open treatment wrist Kienböck"],
+  ["26010","Hand & Fingers","Drainage of finger abscess; simple","","finger abscess drainage infection simple I&D"],
+  ["26011","Hand & Fingers","Drainage of finger abscess; complicated (eg, felon)","","felon finger abscess drainage complicated I&D infection"],
+  ["26020","Hand & Fingers","Drainage of tendon sheath, digit and/or palm, each","","flexor tendon sheath infection tenosynovitis drainage finger palm pyogenic"],
+  ["26025","Hand & Fingers","Drainage of palmar bursa; single","","palmar bursa drainage infection I&D hand"],
+  ["26030","Hand & Fingers","Drainage of palmar bursa; multiple","","palmar bursa multiple drainage infection I&D hand"],
+  ["26037","Hand & Fingers","Decompressive fasciotomy, hand","","hand fasciotomy compartment syndrome decompression"],
+  ["26055","Hand & Fingers","Tendon sheath incision (eg, for trigger finger)","","trigger finger trigger thumb tendon sheath release A1 pulley stenosing tenosynovitis"],
+  ["26060","Hand & Fingers","Tenotomy, percutaneous, single, each digit","","percutaneous tenotomy finger digit contracture Dupuytren"],
+  ["26070","Hand & Fingers","Arthrotomy, carpometacarpal joint; exploration, drainage, or removal of loose or foreign body","","CMC carpometacarpal joint arthrotomy open exploration drainage"],
+  ["26075","Hand & Fingers","Arthrotomy, metacarpophalangeal joint; exploration, drainage, or removal of loose or foreign body","","MCP metacarpophalangeal joint arthrotomy open exploration drainage"],
+  ["26080","Hand & Fingers","Arthrotomy, interphalangeal joint; exploration, drainage, or removal of loose or foreign body","","IP PIP DIP interphalangeal joint arthrotomy open exploration drainage"],
+  ["26185","Hand & Fingers","Sesamoidectomy, thumb or finger","","sesamoid excision thumb finger sesamoidectomy"],
+  ["26320","Hand & Fingers","Removal of implant from finger or hand","","hardware removal finger hand implant K-wire screw plate"],
+  ["26356","Hand & Fingers","Repair or advancement, flexor tendon, zone 2; primary, without free graft","","zone 2 flexor tendon repair no man land primary FDP FDS finger"],
+  ["26357","Hand & Fingers","Repair or advancement, flexor tendon, zone 2; secondary, without free graft","","zone 2 flexor tendon repair no man land secondary FDP FDS finger"],
+  ["26358","Hand & Fingers","Repair or advancement, flexor tendon, zone 2; secondary, with free graft","","zone 2 flexor tendon repair no man land secondary graft FDP FDS finger"],
+  ["26370","Hand & Fingers","Repair or advancement of profundus tendon, with intact superficialis; primary","","FDP profundus repair intact FDS superficialis primary finger"],
+  ["26372","Hand & Fingers","Repair or advancement of profundus tendon, with intact superficialis; secondary with free graft","","FDP profundus repair intact FDS superficialis secondary graft finger"],
+  ["26373","Hand & Fingers","Repair or advancement of profundus tendon, with intact superficialis; secondary without free graft","","FDP profundus repair intact FDS superficialis secondary no graft finger"],
+  ["26426","Hand & Fingers","Repair of extensor tendon, central slip, secondary; using local tissues","","boutonniere central slip extensor tendon repair secondary local tissue finger PIP"],
+  ["26428","Hand & Fingers","Repair of extensor tendon, central slip, secondary; with free graft","","boutonniere central slip extensor tendon repair secondary graft finger PIP"],
+  ["26433","Hand & Fingers","Repair of extensor tendon, distal insertion; without graft (eg, mallet finger)","","mallet finger extensor tendon distal insertion repair without graft DIP"],
+  ["26434","Hand & Fingers","Repair of extensor tendon, distal insertion; with free graft","","mallet finger extensor tendon distal insertion repair graft DIP"],
+  ["26437","Hand & Fingers","Realignment of extensor tendon, hand, each tendon","","extensor tendon realignment subluxation hand MCP sagittal band"],
+  ["26500","Hand & Fingers","Reconstruction of tendon pulley, each tendon; with local tissues","","pulley reconstruction A2 A4 flexor tendon finger local tissue climber"],
+  ["26502","Hand & Fingers","Reconstruction of tendon pulley, each tendon; with tendon or fascial graft","","pulley reconstruction A2 A4 flexor tendon finger graft climber"],
+  ["26540","Hand & Fingers","Repair of collateral ligament, metacarpophalangeal or interphalangeal joint","","collateral ligament repair MCP IP finger thumb UCL RCL gamekeeper skier"],
+  ["26541","Hand & Fingers","Reconstruction, collateral ligament, MCP joint; with tendon or fascial graft","","UCL RCL MCP collateral ligament reconstruction graft thumb gamekeeper skier"],
+  ["26542","Hand & Fingers","Reconstruction, collateral ligament, MCP joint; with local tissue","","UCL RCL MCP collateral ligament reconstruction local tissue thumb"],
+  ["26545","Hand & Fingers","Reconstruction, collateral ligament, interphalangeal joint, including graft","","collateral ligament reconstruction IP PIP DIP graft finger"],
+  ["26548","Hand & Fingers","Repair and reconstruction, finger, volar plate, interphalangeal joint","","volar plate repair reconstruction PIP joint hyperextension dislocation finger"],
+  ["26608","Hand & Fingers","Percutaneous skeletal fixation of metacarpal fracture, each bone","","metacarpal fracture percutaneous pinning K-wire fixation boxer fracture"],
+  ["26615","Hand & Fingers","Open treatment of metacarpal fracture, single, with or without internal or external fixation","","metacarpal fracture ORIF open reduction plate screw boxer fracture"],
+  ["26650","Hand & Fingers","Percutaneous skeletal fixation of carpometacarpal fracture dislocation, thumb (Bennett fracture)","","Bennett fracture thumb CMC carpometacarpal percutaneous pinning K-wire"],
+  ["26665","Hand & Fingers","Open treatment of carpometacarpal fracture dislocation, thumb (Bennett fracture)","","Bennett fracture thumb CMC carpometacarpal ORIF open reduction fixation"],
+  ["26676","Hand & Fingers","Percutaneous skeletal fixation of carpometacarpal dislocation, other than thumb","","CMC carpometacarpal dislocation percutaneous pinning fixation hand"],
+  ["26685","Hand & Fingers","Open treatment of carpometacarpal dislocation, other than thumb","","CMC carpometacarpal dislocation open ORIF hand"],
+  ["26686","Hand & Fingers","Open treatment of carpometacarpal dislocation, other than thumb; complex, multiple, or delayed","","CMC carpometacarpal dislocation complex multiple delayed open ORIF hand"],
+  ["26706","Hand & Fingers","Percutaneous skeletal fixation of metacarpophalangeal dislocation, single","","MCP metacarpophalangeal dislocation percutaneous fixation pinning"],
+  ["26715","Hand & Fingers","Open treatment of metacarpophalangeal dislocation, single","","MCP metacarpophalangeal dislocation open treatment ORIF"],
+  ["26727","Hand & Fingers","Percutaneous skeletal fixation of unstable phalangeal shaft fracture, proximal or middle phalanx","","phalanx phalangeal shaft fracture percutaneous pinning K-wire fixation finger"],
+  ["26735","Hand & Fingers","Open treatment of phalangeal shaft fracture, proximal or middle phalanx","","phalanx phalangeal shaft fracture ORIF open reduction plate screw finger"],
+  ["26746","Hand & Fingers","Open treatment of articular fracture, involving MCP or interphalangeal joint","","articular fracture MCP IP PIP DIP joint ORIF open finger"],
+  ["26756","Hand & Fingers","Percutaneous skeletal fixation of distal phalangeal fracture, finger or thumb","","distal phalanx fracture percutaneous pinning K-wire fixation finger thumb tuft"],
+  ["26765","Hand & Fingers","Open treatment of distal phalangeal fracture, finger or thumb","","distal phalanx fracture ORIF open fixation finger thumb"],
+  ["26776","Hand & Fingers","Percutaneous skeletal fixation of interphalangeal joint dislocation, single","","IP PIP DIP interphalangeal dislocation percutaneous fixation pinning"],
+  ["26785","Hand & Fingers","Open treatment of interphalangeal joint dislocation, single","","IP PIP DIP interphalangeal dislocation open treatment ORIF"],
+  ["26990","Pelvis & Hip","Incision and drainage, pelvis or hip joint area; deep abscess or hematoma","","I&D hip pelvis abscess hematoma deep drainage infection"],
+  ["26991","Pelvis & Hip","Incision and drainage, pelvis or hip joint area; infected bursa","","I&D hip pelvis bursa bursitis drainage infection trochanteric"],
+  ["27086","Pelvis & Hip","Removal of foreign body, pelvis or hip; subcutaneous tissue","","foreign body hip pelvis removal subcutaneous hardware"],
+  ["27087","Pelvis & Hip","Removal of foreign body, pelvis or hip; deep","","foreign body hip pelvis removal deep hardware"],
+  ["27235","Pelvis & Hip","Percutaneous skeletal fixation of femoral fracture, proximal end, neck","","femoral neck fracture percutaneous pinning screws cannulated fixation hip"],
+  ["27236","Pelvis & Hip","Open treatment of femoral fracture, proximal end, neck, internal fixation or prosthetic replacement","","femoral neck fracture ORIF open hip hemiarthroplasty Austin Moore replacement"],
+  ["27244","Pelvis & Hip","Treatment of intertrochanteric, pertrochanteric, or subtrochanteric femoral fracture; with plate/screw","","intertrochanteric subtrochanteric hip fracture DHS dynamic hip screw plate ORIF"],
+  ["27245","Pelvis & Hip","Treatment of intertrochanteric, pertrochanteric, or subtrochanteric femoral fracture; with intramedullary implant","","intertrochanteric subtrochanteric hip fracture IMN intramedullary nail cephalomedullary"],
+  ["27248","Pelvis & Hip","Open treatment of greater trochanteric fracture, includes internal fixation","","greater trochanter fracture ORIF open fixation hip"],
+  ["27253","Pelvis & Hip","Open treatment of hip dislocation, traumatic, without internal fixation","","hip dislocation traumatic open treatment reduction no fixation"],
+  ["27254","Pelvis & Hip","Open treatment of hip dislocation, traumatic, with acetabular wall and femoral head fracture","","hip dislocation acetabular wall femoral head fracture open ORIF"],
+  ["27258","Pelvis & Hip","Open treatment of spontaneous hip dislocation, replacement of femoral head in acetabulum","","spontaneous hip dislocation developmental congenital pathological open reduction"],
+  ["27259","Pelvis & Hip","Open treatment of spontaneous hip dislocation, with femoral shortening","","spontaneous hip dislocation femoral shortening open reduction"],
+  ["27301","Femur & Knee","Incision and drainage, deep abscess, bursa, or hematoma, thigh or knee region","","I&D knee thigh abscess bursa hematoma drainage infection prepatellar"],
+  ["27303","Femur & Knee","Incision, deep, with opening of bone cortex, femur or knee","","osteomyelitis bone abscess femur knee cortex incision"],
+  ["27305","Femur & Knee","Fasciotomy, iliotibial (tenotomy), open","","ITB iliotibial band fasciotomy tenotomy open release"],
+  ["27306","Femur & Knee","Tenotomy, percutaneous, adductor or hamstring; single tendon","","adductor hamstring tenotomy percutaneous single tendon release"],
+  ["27307","Femur & Knee","Tenotomy, percutaneous, adductor or hamstring; multiple tendons","","adductor hamstring tenotomy percutaneous multiple tendons release"],
+  ["27310","Femur & Knee","Arthrotomy, knee, with exploration, drainage, or removal of foreign body","","open knee arthrotomy exploration drainage loose body foreign body infection"],
+  ["27330","Femur & Knee","Arthrotomy, knee; with synovial biopsy only","","open knee synovial biopsy arthrotomy"],
+  ["27331","Femur & Knee","Arthrotomy, knee; including joint exploration, biopsy, or removal of loose or foreign bodies","","open knee exploration biopsy loose body arthrotomy"],
+  ["27332","Femur & Knee","Arthrotomy, with excision of semilunar cartilage (meniscectomy); medial OR lateral","","open meniscectomy medial lateral meniscus excision knee arthrotomy"],
+  ["27333","Femur & Knee","Arthrotomy, with excision of semilunar cartilage (meniscectomy); medial AND lateral","","open meniscectomy medial and lateral both menisci excision knee arthrotomy"],
+  ["27334","Femur & Knee","Arthrotomy, with synovectomy, knee; anterior OR posterior","","open knee synovectomy synovitis anterior posterior arthrotomy"],
+  ["27335","Femur & Knee","Arthrotomy, with synovectomy, knee; anterior AND posterior including popliteal area","","open knee synovectomy synovitis anterior posterior popliteal arthrotomy"],
+  ["27340","Femur & Knee","Excision, prepatellar bursa","","prepatellar bursa excision bursitis housemaid knee"],
+  ["27345","Femur & Knee","Excision of synovial cyst of popliteal space (eg, Baker's cyst)","","Baker cyst popliteal cyst excision synovial knee"],
+  ["27347","Femur & Knee","Excision of lesion of meniscus or capsule (eg, cyst, ganglion), knee","","meniscal cyst ganglion capsule excision knee lesion"],
+  ["27350","Femur & Knee","Patellectomy or hemipatellectomy","","patella excision patellectomy hemipatellectomy kneecap removal"],
+  ["27355","Femur & Knee","Excision or curettage of bone cyst or benign tumor of femur","","bone cyst tumor femur excision curettage"],
+  ["27356","Femur & Knee","Excision or curettage of bone cyst or benign tumor of femur; with allograft","","bone cyst tumor femur excision allograft"],
+  ["27357","Femur & Knee","Excision or curettage of bone cyst or benign tumor of femur; with autograft","","bone cyst tumor femur excision autograft"],
+  ["27358","Femur & Knee","Excision or curettage of bone cyst or benign tumor of femur; with internal fixation","","bone cyst tumor femur excision fixation"],
+  ["27360","Femur & Knee","Partial excision bone, femur, proximal tibia and/or fibula (eg, osteomyelitis)","","osteomyelitis bone abscess femur tibia fibula partial excision"],
+  ["27372","Femur & Knee","Removal of foreign body, deep, thigh region or knee area","","foreign body deep thigh knee removal hardware"],
+  ["27380","Femur & Knee","Suture of infrapatellar tendon; primary","","patellar tendon repair rupture primary infrapatellar suture kneecap"],
+  ["27381","Femur & Knee","Suture of infrapatellar tendon; secondary reconstruction, including fascial or tendon graft","","patellar tendon repair rupture secondary reconstruction graft infrapatellar"],
+  ["27385","Femur & Knee","Suture of quadriceps or hamstring muscle rupture; primary","","quadriceps hamstring muscle rupture repair primary suture"],
+  ["27386","Femur & Knee","Suture of quadriceps or hamstring muscle rupture; secondary reconstruction","","quadriceps hamstring muscle rupture repair secondary reconstruction"],
+  ["27390","Femur & Knee","Tenotomy, open, hamstring, knee to hip; single tendon","","hamstring tenotomy open single tendon release knee hip"],
+  ["27391","Femur & Knee","Tenotomy, open, hamstring, knee to hip; multiple tendons, one leg","","hamstring tenotomy open multiple tendons one leg release"],
+  ["27392","Femur & Knee","Tenotomy, open, hamstring, knee to hip; multiple tendons, bilateral","","hamstring tenotomy open multiple tendons bilateral release"],
+  ["27393","Femur & Knee","Lengthening of hamstring tendon; single tendon","","hamstring tendon lengthening single contracture"],
+  ["27394","Femur & Knee","Lengthening of hamstring tendon; multiple tendons, one leg","","hamstring tendon lengthening multiple one leg contracture"],
+  ["27395","Femur & Knee","Lengthening of hamstring tendon; multiple tendons, bilateral","","hamstring tendon lengthening multiple bilateral contracture"],
+  ["27396","Femur & Knee","Transplant, hamstring tendon to patella; single tendon","","hamstring tendon transplant patella single semi-t gracilis"],
+  ["27397","Femur & Knee","Transplant, hamstring tendon to patella; multiple tendons","","hamstring tendon transplant patella multiple semi-t gracilis"],
+  ["27400","Femur & Knee","Transfer, tendon or muscle, hamstrings to femur (eg, Egger's type procedure)","","hamstring transfer femur Eggers procedure tendon muscle"],
+  ["27403","Femur & Knee","Arthrotomy with meniscus repair, knee","","open meniscus repair knee arthrotomy medial lateral"],
+  ["27405","Femur & Knee","Repair, primary, torn ligament and/or capsule, knee; collateral","","collateral ligament repair knee primary MCL LCL torn"],
+  ["27407","Femur & Knee","Repair, primary, torn ligament and/or capsule, knee; cruciate","","cruciate ligament repair knee primary ACL PCL torn"],
+  ["27409","Femur & Knee","Repair, primary, torn ligament and/or capsule, knee; collateral and cruciate ligaments","","collateral cruciate ligament repair knee primary MCL LCL ACL PCL"],
+  ["27412","Femur & Knee","Autologous chondrocyte implantation, knee","","ACI autologous chondrocyte implantation cartilage knee MACI"],
+  ["27415","Femur & Knee","Osteochondral allograft, knee, open","","osteochondral allograft OCA knee open cartilage OCD distal tibia allograft shell graft fresh frozen"],
+  ["27416","Femur & Knee","Osteochondral autograft(s), knee, open (eg, mosaicplasty)","","mosaicplasty osteochondral autograft OATS knee open cartilage OCD"],
+  ["27418","Femur & Knee","Anterior tibial tubercleplasty (eg, Maquet type procedure)","","tibial tubercle anteriorization Maquet Fulkerson procedure TTO tibial tubercle osteotomy anterior elevation anteromedialization TTTG"],
+  ["27420","Femur & Knee","Reconstruction of dislocating patella (eg, Hauser type procedure)","","patella dislocation reconstruction Hauser Elmslie Trillat procedure tibial tubercle medialization TTO TTTG patellar instability"],
+  ["27422","Femur & Knee","Reconstruction of dislocating patella; with extensor realignment and/or muscle advancement or release (eg, Campbell, Goldthwaite type)","VMO advancement + medial retinaculum imbrication","patella dislocation reconstruction extensor realignment muscle advancement VMO advancement medial retinaculum imbrication Campbell Goldthwaite patellar instability"],
+  ["27424","Femur & Knee","Reconstruction of dislocating patella; with patellectomy","","patella dislocation reconstruction patellectomy removal kneecap"],
+  ["27425","Femur & Knee","Lateral retinacular release, open","","lateral retinacular release LRR open patella tilt malalignment patellar"],
+  ["27427","Femur & Knee","Ligamentous reconstruction (augmentation), knee; extra-articular","LET / Modified Lemaire / ITB tenodesis — use as add-on to 29888 for ACL + LET; bill with -51 modifier","knee ligament reconstruction augmentation extra-articular lateral LCL posterolateral corner PLC PLC reconstruction fibular collateral LCL biceps femoris popliteus popliteofibular LET lateral extra articular tenodesis Lemaire ITB MacIntosh"],
+  ["27428","Femur & Knee","Ligamentous reconstruction (augmentation), knee; intra-articular (open)","","knee ligament reconstruction augmentation intra-articular open ACL PCL MPFL medial patellofemoral ligament"],
+  ["27429","Femur & Knee","Ligamentous reconstruction (augmentation), knee; intra-articular and extra-articular","","knee ligament reconstruction augmentation intra-articular extra-articular ACL PCL lateral MPFL medial patellofemoral ligament reconstruction patellar instability"],
+  ["27430","Femur & Knee","Quadricepsplasty (eg, Bennett or Thompson type)","","quadricepsplasty Bennett Thompson type quad contracture stiffness"],
+  ["27435","Femur & Knee","Capsulotomy, posterior capsular release, knee","","posterior capsule release knee contracture stiffness extension deficit"],
+  ["27448","Femur & Knee","Osteotomy, femur, shaft or supracondylar; without fixation","","femoral osteotomy shaft supracondylar without fixation varus valgus"],
+  ["27450","Femur & Knee","Osteotomy, femur, shaft or supracondylar; with fixation","","femoral osteotomy shaft supracondylar DFO distal femoral varus valgus fixation"],
+  ["27455","Femur & Knee","Osteotomy, proximal tibia; before epiphyseal closure","","proximal tibial osteotomy HTO high tibial osteotomy before growth plate pediatric"],
+  ["27457","Femur & Knee","Osteotomy, proximal tibia; after epiphyseal closure","","HTO high tibial osteotomy proximal tibia varus valgus opening closing wedge"],
+  ["27496","Femur & Knee","Decompression fasciotomy, thigh and/or knee, one compartment","","thigh knee fasciotomy compartment syndrome decompression one compartment"],
+  ["27497","Femur & Knee","Decompression fasciotomy, thigh and/or knee, one compartment; with debridement","","thigh knee fasciotomy compartment syndrome decompression one compartment debridement"],
+  ["27498","Femur & Knee","Decompression fasciotomy, thigh and/or knee, multiple compartments","","thigh knee fasciotomy compartment syndrome decompression multiple compartments"],
+  ["27499","Femur & Knee","Decompression fasciotomy, thigh and/or knee, multiple compartments; with debridement","","thigh knee fasciotomy compartment syndrome decompression multiple compartments debridement"],
+  ["27506","Femur & Knee","Open treatment of femoral shaft fracture with insertion of intramedullary implant","","femur shaft fracture IMN intramedullary nail rod open"],
+  ["27507","Femur & Knee","Open treatment of femoral shaft fracture with plate/screws","","femur shaft fracture ORIF open plate screws fixation"],
+  ["27509","Femur & Knee","Percutaneous skeletal fixation of femoral fracture, distal end","","distal femur fracture percutaneous pinning fixation condyle supracondylar"],
+  ["27511","Femur & Knee","Open treatment of femoral supracondylar or transcondylar fracture without intercondylar extension","","distal femur supracondylar transcondylar fracture ORIF open fixation"],
+  ["27513","Femur & Knee","Open treatment of femoral supracondylar or transcondylar fracture with intercondylar extension","","distal femur supracondylar transcondylar intercondylar fracture ORIF open fixation"],
+  ["27514","Femur & Knee","Open treatment of femoral fracture, distal end, medial or lateral condyle","","distal femur condyle fracture ORIF open fixation medial lateral"],
+  ["27519","Femur & Knee","Open treatment of distal femoral epiphyseal separation","","distal femur epiphyseal separation fracture ORIF open physeal"],
+  ["27524","Femur & Knee","Open treatment of patellar fracture, with internal fixation and/or partial or complete patellectomy","","patella kneecap fracture ORIF open fixation tension band patellectomy"],
+  ["27535","Femur & Knee","Open treatment of tibial fracture, proximal (plateau); unicondylar","","tibial plateau fracture ORIF open unicondylar one condyle Schatzker"],
+  ["27536","Femur & Knee","Open treatment of tibial fracture, proximal (plateau); bicondylar","","tibial plateau fracture ORIF open bicondylar both condyles Schatzker"],
+  ["27540","Femur & Knee","Open treatment of intercondylar spine(s) and/or tuberosity fracture(s) of the knee","","tibial spine eminence tuberosity fracture ORIF open fixation ACL avulsion"],
+  ["27556","Femur & Knee","Open treatment of knee dislocation; without primary ligamentous repair or augmentation","","knee dislocation open treatment no ligament repair multi-ligament"],
+  ["27557","Femur & Knee","Open treatment of knee dislocation; with primary ligamentous repair","","knee dislocation open treatment ligament repair multi-ligament MLK"],
+  ["27558","Femur & Knee","Open treatment of knee dislocation; with primary ligamentous repair, with augmentation/reconstruction","","knee dislocation open treatment ligament repair augmentation reconstruction multi-ligament MLK"],
+  ["27566","Femur & Knee","Open treatment of patellar dislocation, with or without partial or total patellectomy","","patellar dislocation open treatment patellectomy kneecap"],
+  ["27570","Femur & Knee","Manipulation of knee joint under general anesthesia","","MUA manipulation under anesthesia knee stiffness arthrofibrosis"],
+  ["27600","Leg & Ankle","Decompression fasciotomy, leg; anterior and/or lateral compartments only","","leg fasciotomy compartment syndrome anterior lateral decompression"],
+  ["27601","Leg & Ankle","Decompression fasciotomy, leg; posterior compartment(s) only","","leg fasciotomy compartment syndrome posterior decompression"],
+  ["27602","Leg & Ankle","Decompression fasciotomy, leg; anterior and/or lateral, and posterior compartment(s)","","leg fasciotomy compartment syndrome all compartments four compartment decompression"],
+  ["27603","Leg & Ankle","Incision and drainage, leg or ankle; deep abscess or hematoma","","I&D leg ankle abscess hematoma drainage deep infection"],
+  ["27604","Leg & Ankle","Incision and drainage, leg or ankle; infected bursa","","I&D leg ankle bursa bursitis drainage infection"],
+  ["27605","Leg & Ankle","Tenotomy, percutaneous, Achilles tendon; local anesthesia","","Achilles tenotomy percutaneous local anesthesia release Ponseti clubfoot"],
+  ["27606","Leg & Ankle","Tenotomy, percutaneous, Achilles tendon; general anesthesia","","Achilles tenotomy percutaneous general anesthesia release"],
+  ["27607","Leg & Ankle","Incision (eg, osteomyelitis or bone abscess), leg or ankle","","osteomyelitis bone abscess leg ankle incision"],
+  ["27610","Leg & Ankle","Arthrotomy, ankle, including exploration, drainage, or removal of foreign body","","open ankle arthrotomy exploration drainage loose body foreign body infection"],
+  ["27612","Leg & Ankle","Arthrotomy, posterior capsular release, ankle, with or without Achilles tendon lengthening","","posterior capsule release ankle Achilles lengthening open equinus contracture"],
+  ["27620","Leg & Ankle","Arthrotomy, ankle, with joint exploration, with or without biopsy","","open ankle exploration biopsy arthrotomy"],
+  ["27625","Leg & Ankle","Arthrotomy, with synovectomy, ankle","","open ankle synovectomy synovitis arthrotomy"],
+  ["27626","Leg & Ankle","Arthrotomy, with synovectomy, ankle; including tenosynovectomy","","open ankle synovectomy tenosynovectomy tendon sheath arthrotomy"],
+  ["27630","Leg & Ankle","Excision of lesion of tendon sheath or capsule (eg, cyst or ganglion), leg and/or ankle","","ganglion cyst tendon sheath capsule excision ankle leg"],
+  ["27650","Leg & Ankle","Repair, primary, open or percutaneous, ruptured Achilles tendon","","Achilles tendon repair rupture primary open percutaneous Krackow Bunnell PARS mini open"],
+  ["27652","Leg & Ankle","Repair, primary, ruptured Achilles tendon; with graft","","Achilles tendon repair rupture primary graft augmentation FHL flexor hallucis longus transfer tendon transfer"],
+  ["27654","Leg & Ankle","Repair, secondary, Achilles tendon, with or without graft","","Achilles tendon repair rupture secondary chronic graft FHL flexor hallucis longus transfer VY advancement tendon transfer"],
+  ["27656","Leg & Ankle","Repair, fascial defect of leg","","fascial defect leg repair hernia muscle bulge"],
+  ["27658","Leg & Ankle","Repair, flexor tendon, leg; primary, without graft","","flexor tendon repair leg primary FHL FDL tibialis posterior"],
+  ["27659","Leg & Ankle","Repair, flexor tendon, leg; secondary, with or without graft","","flexor tendon repair leg secondary FHL FDL tibialis posterior graft"],
+  ["27664","Leg & Ankle","Repair, extensor tendon, leg; primary, without graft","","extensor tendon repair leg primary tibialis anterior EDL EHL"],
+  ["27665","Leg & Ankle","Repair, extensor tendon, leg; secondary, with or without graft","","extensor tendon repair leg secondary graft tibialis anterior EDL EHL"],
+  ["27675","Leg & Ankle","Repair, dislocating peroneal tendons; without fibular osteotomy","","peroneal tendon dislocation repair subluxation without fibular osteotomy retinaculum SPR superior peroneal retinaculum groove deepening"],
+  ["27676","Leg & Ankle","Repair, dislocating peroneal tendons; with fibular osteotomy","","peroneal tendon dislocation repair subluxation with fibular osteotomy retinaculum SPR superior peroneal retinaculum groove deepening fibular groove"],
+  ["27680","Leg & Ankle","Tenolysis, flexor or extensor tendon, leg and/or ankle; single","","tenolysis flexor extensor tendon leg ankle adhesion single"],
+  ["27681","Leg & Ankle","Tenolysis, flexor or extensor tendon, leg and/or ankle; multiple tendons","","tenolysis flexor extensor tendon leg ankle adhesion multiple"],
+  ["27695","Leg & Ankle","Repair, primary, disrupted ligament, ankle; collateral","","ankle ligament repair primary lateral ATFL CFL collateral Brostrom Gould modification InternalBrace augmentation"],
+  ["27696","Leg & Ankle","Repair, primary, disrupted ligament, ankle; both collateral ligaments","","ankle ligament repair primary both lateral medial ATFL CFL deltoid Brostrom"],
+  ["27698","Leg & Ankle","Repair, secondary, disrupted ligament, ankle, collateral (eg, Watson-Jones)","","ankle ligament repair secondary chronic Watson Jones Brostrom Gould reconstruction ATFL CFL"],
+  ["27705","Leg & Ankle","Osteotomy; tibia","","tibial osteotomy leg tibia angular correction"],
+  ["27707","Leg & Ankle","Osteotomy; fibula","","fibular osteotomy leg fibula"],
+  ["27709","Leg & Ankle","Osteotomy; tibia and fibula","","tibial fibular osteotomy both bones leg"],
+  ["27756","Leg & Ankle","Percutaneous skeletal fixation of tibial shaft fracture","","tibial shaft fracture percutaneous pinning fixation K-wire"],
+  ["27758","Leg & Ankle","Open treatment of tibial shaft fracture with plate/screws","","tibial shaft fracture ORIF open plate screws fixation"],
+  ["27759","Leg & Ankle","Treatment of tibial shaft fracture by intramedullary implant","","tibial shaft fracture IMN intramedullary nail rod"],
+  ["27766","Leg & Ankle","Open treatment of medial malleolus fracture, includes internal fixation","","medial malleolus fracture ORIF open fixation ankle"],
+  ["27769","Leg & Ankle","Open treatment of posterior malleolus fracture, includes internal fixation","","posterior malleolus fracture ORIF open fixation ankle trimalleolar"],
+  ["27784","Leg & Ankle","Open treatment of proximal fibula or shaft fracture, includes internal fixation","","fibula proximal shaft fracture ORIF open fixation"],
+  ["27792","Leg & Ankle","Open treatment of distal fibular fracture (lateral malleolus), includes internal fixation","","lateral malleolus distal fibula fracture ORIF open fixation ankle"],
+  ["27814","Leg & Ankle","Open treatment of bimalleolar ankle fracture, includes internal fixation","","bimalleolar ankle fracture ORIF open fixation medial lateral malleolus"],
+  ["27822","Leg & Ankle","Open treatment of trimalleolar ankle fracture; without fixation of posterior lip","","trimalleolar ankle fracture ORIF open fixation without posterior lip"],
+  ["27823","Leg & Ankle","Open treatment of trimalleolar ankle fracture; with fixation of posterior lip","","trimalleolar ankle fracture ORIF open fixation with posterior lip"],
+  ["27826","Leg & Ankle","Open treatment of fracture of weight bearing articular surface of distal tibia; of fibula only","","pilon tibial plafond fracture ORIF fibula only open fixation"],
+  ["27827","Leg & Ankle","Open treatment of fracture of weight bearing articular surface of distal tibia; of tibia only","","pilon tibial plafond fracture ORIF tibia only open fixation"],
+  ["27828","Leg & Ankle","Open treatment of fracture of weight bearing articular surface of distal tibia; of both tibia and fibula","","pilon tibial plafond fracture ORIF both tibia fibula open fixation"],
+  ["27829","Leg & Ankle","Open treatment of distal tibiofibular joint (syndesmosis) disruption","","syndesmosis ankle tibiofibular disruption ORIF open fixation high ankle sprain"],
+  ["27832","Leg & Ankle","Open treatment of proximal tibiofibular joint dislocation","","proximal tibiofibular joint dislocation open treatment"],
+  ["27846","Leg & Ankle","Open treatment of ankle dislocation; without repair or internal fixation","","ankle dislocation open treatment no fixation"],
+  ["27848","Leg & Ankle","Open treatment of ankle dislocation; with repair or internal or external fixation","","ankle dislocation open treatment fixation repair"],
+  ["27860","Leg & Ankle","Manipulation of ankle under general anesthesia","","MUA manipulation under anesthesia ankle stiffness equinus"],
+  ["27892","Leg & Ankle","Decompression fasciotomy, leg; anterior and/or lateral compartments only, with debridement","","leg fasciotomy compartment syndrome anterior lateral decompression debridement"],
+  ["27893","Leg & Ankle","Decompression fasciotomy, leg; posterior compartment(s) only, with debridement","","leg fasciotomy compartment syndrome posterior decompression debridement"],
+  ["27894","Leg & Ankle","Decompression fasciotomy, leg; anterior and/or lateral, and posterior compartment(s), with debridement","","leg fasciotomy compartment syndrome all compartments decompression debridement"],
+  ["28035","Foot & Toes","Release, tarsal tunnel (posterior tibial nerve decompression)","","tarsal tunnel release posterior tibial nerve decompression foot"],
+  ["28060","Foot & Toes","Fasciectomy, plantar fascia; partial","","plantar fasciectomy plantar fasciitis partial heel pain"],
+  ["28062","Foot & Toes","Fasciectomy, plantar fascia; radical","","plantar fasciectomy plantar fasciitis radical heel pain"],
+  ["28080","Foot & Toes","Excision, interdigital (Morton) neuroma, single, each","","Morton neuroma interdigital excision foot metatarsal"],
+  ["28090","Foot & Toes","Excision of lesion, tendon, tendon sheath, or capsule; foot","","ganglion cyst lesion tendon sheath excision foot"],
+  ["28092","Foot & Toes","Excision of lesion, tendon, tendon sheath, or capsule; toe(s), each","","ganglion cyst lesion tendon sheath excision toe"],
+  ["28110","Foot & Toes","Ostectomy, partial excision, fifth metatarsal head (bunionette)","","bunionette tailor bunion fifth metatarsal head excision ostectomy"],
+  ["28116","Foot & Toes","Ostectomy, excision of tarsal coalition","","tarsal coalition excision calcaneonavicular talocalcaneal ostectomy"],
+  ["28118","Foot & Toes","Ostectomy, calcaneus","","calcaneus ostectomy excision Haglund deformity"],
+  ["28119","Foot & Toes","Ostectomy, calcaneus; for spur, with or without plantar fascial release","","calcaneal spur excision heel spur plantar fascia release ostectomy"],
+  ["28190","Foot & Toes","Removal of foreign body, foot; subcutaneous","","foreign body foot removal subcutaneous"],
+  ["28192","Foot & Toes","Removal of foreign body, foot; deep","","foreign body foot removal deep"],
+  ["28193","Foot & Toes","Removal of foreign body, foot; complicated","","foreign body foot removal complicated"],
+  ["28288","Foot & Toes","Ostectomy, partial, exostectomy or condylectomy, metatarsal head","","metatarsal head exostectomy condylectomy ostectomy foot"],
+  ["28289","Foot & Toes","Hallux rigidus correction with cheilectomy, debridement and capsular release of first MTP joint; without implant","","hallux rigidus cheilectomy first MTP joint debridement capsular release big toe stiff"],
+  ["28315","Foot & Toes","Sesamoidectomy, first toe","","sesamoid excision first toe great toe sesamoidectomy hallux"],
+  ["28406","Foot & Toes","Percutaneous skeletal fixation of calcaneal fracture, with manipulation","","calcaneus heel fracture percutaneous fixation pinning"],
+  ["28415","Foot & Toes","Open treatment of calcaneal fracture, includes internal fixation","","calcaneus heel fracture ORIF open fixation"],
+  ["28420","Foot & Toes","Open treatment of calcaneal fracture; with primary iliac or other autogenous bone graft","","calcaneus heel fracture ORIF open fixation bone graft"],
+  ["28436","Foot & Toes","Percutaneous skeletal fixation of talus fracture, with manipulation","","talus fracture percutaneous fixation pinning"],
+  ["28445","Foot & Toes","Open treatment of talus fracture, includes internal fixation","","talus fracture ORIF open fixation"],
+  ["28456","Foot & Toes","Percutaneous skeletal fixation of tarsal bone fracture (except talus and calcaneus), each","","tarsal bone fracture percutaneous fixation navicular cuboid cuneiform"],
+  ["28465","Foot & Toes","Open treatment of tarsal bone fracture (except talus and calcaneus), each","","tarsal bone fracture ORIF open navicular cuboid cuneiform"],
+  ["28476","Foot & Toes","Percutaneous skeletal fixation of metatarsal fracture, with manipulation, each","","metatarsal fracture percutaneous fixation pinning Jones fracture fifth"],
+  ["28485","Foot & Toes","Open treatment of metatarsal fracture, includes internal fixation, each","","metatarsal fracture ORIF open fixation Jones fracture fifth"],
+  ["28496","Foot & Toes","Percutaneous skeletal fixation of fracture great toe, phalanx or phalanges","","great toe big toe phalanx fracture percutaneous fixation pinning hallux"],
+  ["28505","Foot & Toes","Open treatment of fracture great toe, phalanx or phalanges","","great toe big toe phalanx fracture ORIF open fixation hallux"],
+  ["28525","Foot & Toes","Open treatment of fracture, phalanx or phalanges, other than great toe","","toe phalanx fracture ORIF open fixation lesser toes"],
+  ["28531","Foot & Toes","Open treatment of sesamoid fracture, with or without internal fixation","","sesamoid fracture open ORIF fixation foot hallux"],
+  ["28546","Foot & Toes","Percutaneous skeletal fixation of tarsal bone dislocation, other than talotarsal","","tarsal bone dislocation percutaneous fixation"],
+  ["28555","Foot & Toes","Open treatment of tarsal bone dislocation, with or without internal or external fixation","","tarsal bone dislocation open ORIF fixation"],
+  ["28576","Foot & Toes","Percutaneous skeletal fixation of talotarsal joint dislocation, with manipulation","","talotarsal subtalar joint dislocation percutaneous fixation"],
+  ["28585","Foot & Toes","Open treatment of talotarsal joint dislocation, includes internal fixation","","talotarsal subtalar joint dislocation open ORIF fixation"],
+  ["28606","Foot & Toes","Percutaneous skeletal fixation of tarsometatarsal joint dislocation, with manipulation","","Lisfranc tarsometatarsal joint dislocation percutaneous fixation pinning"],
+  ["28615","Foot & Toes","Open treatment of tarsometatarsal joint dislocation, includes internal fixation","","Lisfranc tarsometatarsal joint dislocation ORIF open fixation"],
+  ["28636","Foot & Toes","Percutaneous skeletal fixation of metatarsophalangeal joint dislocation, with manipulation","","MTP metatarsophalangeal joint dislocation percutaneous fixation"],
+  ["28645","Foot & Toes","Open treatment of metatarsophalangeal joint dislocation, includes internal fixation","","MTP metatarsophalangeal joint dislocation ORIF open fixation"],
+  ["28666","Foot & Toes","Percutaneous skeletal fixation of interphalangeal joint dislocation, with manipulation","","IP interphalangeal joint dislocation toe percutaneous fixation"],
+  ["28675","Foot & Toes","Open treatment of interphalangeal joint dislocation, includes internal fixation","","IP interphalangeal joint dislocation toe open ORIF fixation"],
+  ["29805","Arthroscopy","Arthroscopy, shoulder, diagnostic, with or without synovial biopsy","","diagnostic shoulder scope arthroscopy biopsy synovial"],
+  ["29806","Arthroscopy","Arthroscopy, shoulder, surgical; capsulorrhaphy","","shoulder arthroscopy capsulorrhaphy capsular shift instability Bankart remplissage anterior posterior"],
+  ["29807","Arthroscopy","Arthroscopy, shoulder, surgical; repair of SLAP lesion","","SLAP repair shoulder arthroscopy labrum superior labral anterior posterior type 2 type 3 type 4 biceps anchor"],
+  ["29819","Arthroscopy","Arthroscopy, shoulder, surgical; with removal of loose body or foreign body","","shoulder arthroscopy loose body foreign body removal"],
+  ["29820","Arthroscopy","Arthroscopy, shoulder, surgical; synovectomy, partial","","shoulder arthroscopy synovectomy partial synovitis"],
+  ["29821","Arthroscopy","Arthroscopy, shoulder, surgical; synovectomy, complete","","shoulder arthroscopy synovectomy complete synovitis"],
+  ["29822","Arthroscopy","Arthroscopy, shoulder, surgical; debridement, limited","","shoulder arthroscopy debridement limited partial thickness rotator cuff tear PASTA partial articular supraspinatus tendon avulsion PAINT"],
+  ["29823","Arthroscopy","Arthroscopy, shoulder, surgical; debridement, extensive","","shoulder arthroscopy debridement extensive remplissage Hill-Sachs"],
+  ["29824","Arthroscopy","Arthroscopy, shoulder, surgical; distal claviculectomy including distal articular surface (Mumford procedure)","","Mumford distal clavicle resection excision AC joint arthroscopy shoulder"],
+  ["29825","Arthroscopy","Arthroscopy, shoulder, surgical; with lysis and resection of adhesions","","shoulder arthroscopy lysis adhesions frozen shoulder adhesive capsulitis manipulation"],
+  ["29826","Arthroscopy","Arthroscopy, shoulder, surgical; decompression of subacromial space with partial acromioplasty","","subacromial decompression SAD acromioplasty arthroscopy shoulder impingement"],
+  ["29827","Arthroscopy","Arthroscopy, shoulder, surgical; with rotator cuff repair","","rotator cuff repair arthroscopy shoulder scope RCR supraspinatus infraspinatus subscapularis superior capsule reconstruction SCR patch augmentation PASTA transosseous equivalent"],
+  ["29828","Arthroscopy","Arthroscopy, shoulder, surgical; biceps tenodesis","","biceps tenodesis arthroscopy shoulder scope LHBT subpectoral"],
+  ["29830","Arthroscopy","Arthroscopy, elbow, diagnostic, with or without synovial biopsy","","diagnostic elbow scope arthroscopy biopsy synovial"],
+  ["29834","Arthroscopy","Arthroscopy, elbow, surgical; with removal of loose body or foreign body","","elbow arthroscopy loose body foreign body removal scope OCD"],
+  ["29835","Arthroscopy","Arthroscopy, elbow, surgical; synovectomy, partial","","elbow arthroscopy synovectomy partial synovitis"],
+  ["29836","Arthroscopy","Arthroscopy, elbow, surgical; synovectomy, complete","","elbow arthroscopy synovectomy complete synovitis"],
+  ["29837","Arthroscopy","Arthroscopy, elbow, surgical; debridement, limited","","elbow arthroscopy debridement limited"],
+  ["29838","Arthroscopy","Arthroscopy, elbow, surgical; debridement, extensive","","elbow arthroscopy debridement extensive contracture release osteophyte"],
+  ["29840","Arthroscopy","Arthroscopy, wrist, diagnostic, with or without synovial biopsy","","diagnostic wrist scope arthroscopy biopsy synovial"],
+  ["29843","Arthroscopy","Arthroscopy, wrist, surgical; for infection, lavage and drainage","","wrist arthroscopy infection lavage drainage septic"],
+  ["29844","Arthroscopy","Arthroscopy, wrist, surgical; synovectomy, partial","","wrist arthroscopy synovectomy partial synovitis"],
+  ["29845","Arthroscopy","Arthroscopy, wrist, surgical; synovectomy, complete","","wrist arthroscopy synovectomy complete synovitis"],
+  ["29846","Arthroscopy","Arthroscopy, wrist, surgical; excision and/or repair of triangular fibrocartilage and/or joint debridement","","wrist arthroscopy TFCC triangular fibrocartilage complex repair excision debridement"],
+  ["29847","Arthroscopy","Arthroscopy, wrist, surgical; internal fixation for fracture or instability","","wrist arthroscopy internal fixation fracture instability scaphoid SL SLIL"],
+  ["29848","Arthroscopy","Endoscopy, wrist, surgical, with release of transverse carpal ligament","","endoscopic carpal tunnel release CTR wrist transverse carpal ligament"],
+  ["29850","Arthroscopy","Arthroscopically aided treatment of intercondylar spine(s) and/or tuberosity fracture(s), without fixation","","tibial spine eminence fracture arthroscopic treatment ACL avulsion no fixation"],
+  ["29851","Arthroscopy","Arthroscopically aided treatment of intercondylar spine(s) and/or tuberosity fracture(s), with fixation","","tibial spine eminence fracture arthroscopic treatment ACL avulsion fixation"],
+  ["29855","Arthroscopy","Arthroscopically aided treatment of tibial fracture, proximal (plateau); unicondylar","","tibial plateau fracture arthroscopic treatment unicondylar"],
+  ["29856","Arthroscopy","Arthroscopically aided treatment of tibial fracture, proximal (plateau); bicondylar","","tibial plateau fracture arthroscopic treatment bicondylar"],
+  ["29860","Arthroscopy","Arthroscopy, hip, diagnostic with or without synovial biopsy","","diagnostic hip scope arthroscopy biopsy synovial"],
+  ["29861","Arthroscopy","Arthroscopy, hip, surgical; with removal of loose body or foreign body","","hip arthroscopy loose body foreign body removal scope"],
+  ["29862","Arthroscopy","Arthroscopy, hip, surgical; with debridement/shaving of articular cartilage, abrasion arthroplasty, and/or resection of labrum","","hip arthroscopy chondroplasty debridement cartilage labrum resection FAI"],
+  ["29863","Arthroscopy","Arthroscopy, hip, surgical; with synovectomy","","hip arthroscopy synovectomy synovitis"],
+  ["29866","Arthroscopy","Arthroscopy, knee, surgical; osteochondral autograft(s) (eg, mosaicplasty)","","knee arthroscopy mosaicplasty osteochondral autograft OATS OCD cartilage"],
+  ["29867","Arthroscopy","Arthroscopy, knee, surgical; osteochondral allograft (eg, mosaicplasty)","","knee arthroscopy osteochondral allograft OCA OCD cartilage distal tibia allograft shell graft fresh frozen"],
+  ["29868","Arthroscopy","Arthroscopy, knee, surgical; meniscal transplantation, medial or lateral","","knee arthroscopy meniscal transplant allograft medial lateral MMT LMT bone plug bridge slot technique"],
+  ["29870","Arthroscopy","Arthroscopy, knee, diagnostic, with or without synovial biopsy","","diagnostic knee scope arthroscopy biopsy synovial"],
+  ["29871","Arthroscopy","Arthroscopy, knee, surgical; for infection, lavage and drainage","","knee arthroscopy infection lavage drainage septic joint wash out"],
+  ["29873","Arthroscopy","Arthroscopy, knee, surgical; with lateral release","","knee arthroscopy lateral release retinaculum patellar tilt malalignment"],
+  ["29874","Arthroscopy","Arthroscopy, knee, surgical; for removal of loose body or foreign body","","knee arthroscopy loose body removal OCD osteochondritis dissecans"],
+  ["29875","Arthroscopy","Arthroscopy, knee, surgical; synovectomy, limited (eg, plica or shelf resection)","","knee arthroscopy synovectomy limited plica shelf resection"],
+  ["29876","Arthroscopy","Arthroscopy, knee, surgical; synovectomy, major, two or more compartments","","knee arthroscopy synovectomy major two compartments synovitis"],
+  ["29877","Arthroscopy","Arthroscopy, knee, surgical; debridement/shaving of articular cartilage (chondroplasty)","","knee arthroscopy chondroplasty debridement cartilage shaving"],
+  ["29879","Arthroscopy","Arthroscopy, knee, surgical; abrasion arthroplasty or multiple drilling or microfracture","","knee arthroscopy microfracture abrasion arthroplasty drilling cartilage OCD"],
+  ["29880","Arthroscopy","Arthroscopy, knee, surgical; with meniscectomy (medial AND lateral)","","knee arthroscopy meniscectomy medial and lateral both menisci partial total"],
+  ["29881","Arthroscopy","Arthroscopy, knee, surgical; with meniscectomy (medial OR lateral)","","knee arthroscopy meniscectomy medial or lateral partial total meniscus tear"],
+  ["29882","Arthroscopy","Arthroscopy, knee, surgical; with meniscus repair (medial OR lateral)","","knee arthroscopy meniscus repair medial or lateral inside-out outside-in all-inside meniscal root repair ramp lesion posterior horn"],
+  ["29883","Arthroscopy","Arthroscopy, knee, surgical; with meniscus repair (medial AND lateral)","","knee arthroscopy meniscus repair medial and lateral both inside-out outside-in all-inside meniscal root repair ramp lesion"],
+  ["29884","Arthroscopy","Arthroscopy, knee, surgical; with lysis of adhesions, with or without manipulation","","knee arthroscopy lysis adhesions manipulation arthrofibrosis stiffness"],
+  ["29885","Arthroscopy","Arthroscopy, knee, surgical; drilling for osteochondritis dissecans with bone grafting","","knee arthroscopy OCD osteochondritis dissecans drilling bone graft"],
+  ["29886","Arthroscopy","Arthroscopy, knee, surgical; drilling for intact osteochondritis dissecans lesion","","knee arthroscopy OCD osteochondritis dissecans drilling intact"],
+  ["29887","Arthroscopy","Arthroscopy, knee, surgical; drilling for intact osteochondritis dissecans lesion with internal fixation","","knee arthroscopy OCD osteochondritis dissecans drilling fixation intact"],
+  ["29888","Arthroscopy","Arthroscopically aided anterior cruciate ligament repair/augmentation or reconstruction","","ACL reconstruction repair augmentation arthroscopy knee scope BTB bone tendon bone patellar tendon hamstring quad quadriceps tendon quad graft allograft autograft BPTB"],
+  ["29889","Arthroscopy","Arthroscopically aided posterior cruciate ligament repair/augmentation or reconstruction","","PCL reconstruction repair augmentation arthroscopy knee scope"],
+  ["29891","Arthroscopy","Arthroscopy, ankle, surgical; excision of osteochondral defect of talus and/or tibia","","ankle arthroscopy OCD osteochondral defect talus tibia excision"],
+  ["29892","Arthroscopy","Arthroscopically aided repair of large osteochondritis dissecans lesion, talar dome fracture, or tibial plafond fracture","","ankle arthroscopy OCD talar dome fracture tibial plafond large lesion repair"],
+  ["29893","Arthroscopy","Endoscopic plantar fasciotomy","","endoscopic plantar fascia release fasciotomy plantar fasciitis heel pain"],
+  ["29894","Arthroscopy","Arthroscopy, ankle, surgical; with removal of loose body or foreign body","","ankle arthroscopy loose body foreign body removal"],
+  ["29895","Arthroscopy","Arthroscopy, ankle, surgical; synovectomy, partial","","ankle arthroscopy synovectomy partial synovitis"],
+  ["29897","Arthroscopy","Arthroscopy, ankle, surgical; debridement, limited","","ankle arthroscopy debridement limited anterior impingement"],
+  ["29898","Arthroscopy","Arthroscopy, ankle, surgical; debridement, extensive","","ankle arthroscopy debridement extensive impingement osteophyte"],
+  ["29899","Arthroscopy","Arthroscopy, ankle, surgical; with ankle arthrodesis","","ankle arthroscopy arthrodesis fusion"],
+  ["29904","Arthroscopy","Arthroscopy, subtalar joint, surgical; with removal of loose body or foreign body","","subtalar joint arthroscopy loose body foreign body removal"],
+  ["29905","Arthroscopy","Arthroscopy, subtalar joint, surgical; with synovectomy","","subtalar joint arthroscopy synovectomy synovitis"],
+  ["29906","Arthroscopy","Arthroscopy, subtalar joint, surgical; with debridement","","subtalar joint arthroscopy debridement"],
+  ["29907","Arthroscopy","Arthroscopy, subtalar joint, surgical; with subtalar arthrodesis","","subtalar joint arthroscopy arthrodesis fusion"],
+  ["29914","Arthroscopy","Arthroscopy, hip, surgical; with femoroplasty (treatment of cam lesion)","","hip arthroscopy femoroplasty cam lesion FAI femoroacetabular impingement"],
+  ["29915","Arthroscopy","Arthroscopy, hip, surgical; with acetabuloplasty (treatment of pincer lesion)","","hip arthroscopy acetabuloplasty pincer lesion FAI femoroacetabular impingement"],
+  ["29916","Arthroscopy","Arthroscopy, hip, surgical; with labral repair","","hip arthroscopy labral repair labrum FAI femoroacetabular impingement refixation reconstruction allograft"],
+  ["29999","Arthroscopy","Unlisted procedure, arthroscopy","","unlisted arthroscopy procedure remplissage MPFL reconstruction novel"],
+  ["64718","Neuroplasty","Neuroplasty and/or transposition; ulnar nerve at elbow","","ulnar nerve transposition neuroplasty elbow cubital tunnel syndrome release anterior subcutaneous submuscular intramuscular"],
+  ["64719","Neuroplasty","Neuroplasty and/or transposition; ulnar nerve at wrist","","ulnar nerve neuroplasty wrist Guyon canal release"],
+  ["64721","Neuroplasty","Neuroplasty and/or transposition; median nerve at carpal tunnel","","carpal tunnel release CTR median nerve neuroplasty open"],
+];
+
+let favs = new Set(JSON.parse(localStorage.getItem('cpt_favs')||'[]'));
+let showFavOnly = false;
+
+function saveFavs() { localStorage.setItem('cpt_favs', JSON.stringify([...favs])); }
+
+function toggleFavMode() {
+  showFavOnly = !showFavOnly;
+  const btn = document.getElementById('favBtn');
+  btn.textContent = showFavOnly ? '★ All codes' : '☆ My codes';
+  btn.classList.toggle('active', showFavOnly);
+  render();
+}
+
+function toggleCode(code) {
+  if (favs.has(code)) favs.delete(code); else favs.add(code);
+  saveFavs();
+  document.querySelectorAll(`[data-code="${code}"]`).forEach(btn => {
+    btn.classList.toggle('active', favs.has(code));
+    btn.textContent = favs.has(code) ? '★' : '☆';
+  });
+  updateStats();
+}
+
+function filter() { render(); }
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const cat = document.getElementById('catFilter').value;
+  let rows = ALL;
+  if (showFavOnly) rows = rows.filter(r => favs.has(r[0]));
+  if (cat) rows = rows.filter(r => r[1] === cat);
+  if (q) rows = rows.filter(r =>
+    r[0].includes(q) || r[2].toLowerCase().includes(q) ||
+    r[1].toLowerCase().includes(q) ||
+    (r[3] && r[3].toLowerCase().includes(q)) ||
+    (r[4] && r[4].toLowerCase().includes(q))
+  );
+  document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
+  document.getElementById('countRow').textContent = `Showing ${rows.length} of ${ALL.length} codes`;
+  const container = document.getElementById('rows');
+  container.innerHTML = rows.map(([code, cat, desc, note]) => {
+    const c = CAT_COLORS[cat] || {bg:'#222',color:'#aaa'};
+    return `<div class="row">
+      <div class="cell-fav"><button class="fav-btn${favs.has(code)?' active':''}" data-code="${code}" onclick="toggleCode('${code}')">${favs.has(code)?'★':'☆'}</button></div>
+      <div class="cell cell-code">${code}</div>
+      <div class="cell cell-cat"><span class="cat-badge" style="background:${c.bg};color:${c.color};">${cat}</span></div>
+      <div class="cell cell-desc">${desc}${note?`<br><span class="note-tag">ℹ ${note}</span>`:''}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  const counts = {};
+  ALL.forEach(([,cat]) => counts[cat] = (counts[cat]||0)+1);
+  const bar = document.getElementById('statsBar');
+  bar.innerHTML = `<span class="pill">★ ${favs.size} saved</span>`
+    + Object.entries(counts).map(([c,n]) => {
+        const col = CAT_COLORS[c]||{bg:'#222',color:'#aaa'};
+        return `<span class="pill" style="background:${col.bg};color:${col.color};border-color:${col.color}44;" onclick="document.getElementById('catFilter').value='${c}';filter();">${c} <strong>${n}</strong></span>`;
+      }).join('');
+}
+
+render();
+updateStats();
+</script>
+</body>
+</html>
