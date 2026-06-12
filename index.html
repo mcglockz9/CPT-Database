@@ -3,269 +3,171 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CPT Code Database — Orthopaedic Sports Medicine</title>
+<title>CPT Database — Orthopaedic Sports Medicine</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: #0f1117;
-  color: #e8eaf0;
-  font-size: 14px;
-  -webkit-font-smoothing: antialiased;
-}
+body { font-family: "DM Sans", sans-serif; background: #0f1117; color: #e8eaf0; font-size: 14px; -webkit-font-smoothing: antialiased; }
 
-/* HEADER */
-#topbar {
-  background: #181c27;
-  border-bottom: 1px solid #2a2f42;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-.logo {
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  color: #4f8ef7;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.logo span { color: #555d7a; }
-#search {
-  flex: 1;
-  min-width: 160px;
-  background: #0f1117;
-  border: 1px solid #2a2f42;
-  border-radius: 6px;
-  color: #e8eaf0;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  padding: 7px 12px;
-  outline: none;
-}
-#search::placeholder { color: #555d7a; }
-#search:focus { border-color: #4f8ef7; }
-#catFilter {
-  background: #0f1117;
-  border: 1px solid #2a2f42;
-  border-radius: 6px;
-  color: #e8eaf0;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  padding: 7px 10px;
-  outline: none;
-  cursor: pointer;
-}
-#favBtn {
-  background: #1e2333;
-  border: 1px solid #2a2f42;
-  border-radius: 6px;
-  color: #e8eaf0;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  padding: 7px 12px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-#favBtn.active { background: rgba(240,168,50,0.12); border-color: #c88a20; color: #f0a832; }
+/* TAB BAR */
+#tabBar { display:flex; background:#181c27; border-bottom:1px solid #2a2f42; padding:0 16px; gap:4px; }
+.tab { background:none; border:none; border-bottom:2px solid transparent; color:#8b91a8; font-family:"DM Sans",sans-serif; font-size:13px; font-weight:500; padding:10px 14px 8px; cursor:pointer; transition:color 0.15s,border-color 0.15s; }
+.tab:hover { color:#e8eaf0; }
+.tab.active { color:#4f8ef7; border-bottom-color:#4f8ef7; }
+
+/* TOP CONTROLS */
+#topbar { background:#181c27; border-bottom:1px solid #2a2f42; padding:10px 16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; position:sticky; top:0; z-index:50; }
+.logo { font-family:"DM Mono",monospace; font-size:12px; color:#4f8ef7; white-space:nowrap; flex-shrink:0; }
+.logo span { color:#555d7a; }
+#search { flex:1; min-width:160px; background:#0f1117; border:1px solid #2a2f42; border-radius:6px; color:#e8eaf0; font-family:"DM Sans",sans-serif; font-size:13px; padding:7px 12px; outline:none; }
+#search::placeholder { color:#555d7a; }
+#search:focus { border-color:#4f8ef7; }
+#catFilter { background:#0f1117; border:1px solid #2a2f42; border-radius:6px; color:#e8eaf0; font-family:"DM Sans",sans-serif; font-size:13px; padding:7px 10px; outline:none; cursor:pointer; }
+#favBtn { background:#1e2333; border:1px solid #2a2f42; border-radius:6px; color:#e8eaf0; font-family:"DM Sans",sans-serif; font-size:13px; padding:7px 12px; cursor:pointer; white-space:nowrap; }
+#favBtn.active { background:rgba(240,168,50,0.12); border-color:#c88a20; color:#f0a832; }
 
 /* STATS */
-#statsBar {
-  padding: 8px 16px;
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  background: #181c27;
-  border-bottom: 1px solid #2a2f42;
-}
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 9px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 500;
-  border: 1px solid #2a2f42;
-  color: #8b91a8;
-  background: #0f1117;
-  cursor: pointer;
-}
-.pill strong { font-weight: 600; }
+#statsBar { padding:8px 16px; display:flex; gap:6px; flex-wrap:wrap; background:#181c27; border-bottom:1px solid #2a2f42; }
+.pill { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:500; border:1px solid #2a2f42; color:#8b91a8; background:#0f1117; cursor:pointer; }
+.pill strong { font-weight:600; }
 
-/* ROW LAYOUT — use divs not table */
-#listWrap {
-  padding: 0 0 60px 0;
-}
+/* DATABASE ROWS */
+#listWrap { padding:0 0 60px 0; }
+.row-header { display:grid; grid-template-columns:36px 90px 150px 1fr; padding:8px 16px; background:#0f1117; border-bottom:1px solid #2a2f42; position:sticky; top:0; z-index:40; }
+.row-header span { font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#555d7a; }
+.row { display:grid; grid-template-columns:36px 90px 150px 1fr; border-bottom:1px solid #1e2333; align-items:start; }
+.row:hover { background:#181c27; }
+.cell { padding:9px 10px; }
+.cell-fav { padding:9px 4px; display:flex; align-items:flex-start; justify-content:center; }
+.cell-code { font-family:"DM Mono",monospace; font-size:13px; font-weight:500; color:#e8eaf0; white-space:nowrap; }
+.cat-badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:500; white-space:nowrap; }
+.cell-desc { font-size:13px; color:#8b91a8; line-height:1.5; word-break:break-word; }
+.note-tag { display:inline-flex; align-items:center; gap:4px; margin-top:5px; padding:2px 8px; border-radius:4px; font-size:11px; background:rgba(79,142,247,0.12); color:#7aabff; border:1px solid rgba(79,142,247,0.25); }
+.fav-btn { background:none; border:none; cursor:pointer; color:#555d7a; font-size:16px; line-height:1; padding:2px; transition:color 0.15s; }
+.fav-btn:hover { color:#f0a832; }
+.fav-btn.active { color:#f0a832; }
+#empty { display:none; text-align:center; padding:60px 20px; color:#555d7a; }
+#countRow { position:fixed; bottom:0; left:0; right:0; padding:8px 16px; font-size:11px; color:#555d7a; background:#0f1117; border-top:1px solid #2a2f42; }
 
-.row-header {
-  display: grid;
-  grid-template-columns: 36px 90px 150px 1fr;
-  gap: 0;
-  padding: 8px 16px;
-  background: #0f1117;
-  border-bottom: 1px solid #2a2f42;
-  position: sticky;
-  top: 57px;
-  z-index: 40;
-}
-.row-header span {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #555d7a;
-}
+/* GUIDE */
+#panel-guide { display:none; padding:0 0 80px 0; }
+#guideContent { max-width:860px; padding:16px 16px 40px; }
+.gs { margin-bottom:16px; background:#181c27; border:1px solid #2a2f42; border-radius:10px; overflow:hidden; }
+.gs-head { display:flex; align-items:center; gap:10px; padding:12px 16px; background:#1e2333; border-bottom:1px solid #2a2f42; cursor:pointer; user-select:none; }
+.gs-head:hover { background:#252c40; }
+.gs-title { font-size:14px; font-weight:600; color:#e8eaf0; flex:1; }
+.gs-sub { font-size:11px; color:#8b91a8; font-weight:400; margin-top:2px; }
+.gs-chev { color:#555d7a; font-size:11px; transition:transform 0.2s; flex-shrink:0; }
+.gs.open .gs-chev { transform:rotate(180deg); }
+.gs-body { display:none; }
+.gs.open .gs-body { display:block; }
+.gc-row { display:grid; grid-template-columns:82px 1fr; gap:8px 12px; padding:12px 16px; border-bottom:1px solid #1a1f2e; align-items:start; }
+.gc-row:last-child { border-bottom:none; }
+.gc-code { font-family:"DM Mono",monospace; font-size:14px; font-weight:500; color:#e8eaf0; padding-top:2px; }
+.gc-name { font-size:12px; font-weight:600; color:#e8eaf0; margin-bottom:5px; }
+.gc-rule { font-size:12px; color:#8b91a8; line-height:1.6; }
+.gc-rule ul { margin:5px 0 0 16px; }
+.gc-rule li { margin-bottom:3px; }
+.callout { display:flex; align-items:flex-start; gap:6px; margin-top:7px; padding:6px 10px; border-radius:6px; font-size:11px; line-height:1.45; }
+.callout.info { background:rgba(79,142,247,0.1); color:#7aabff; border:1px solid rgba(79,142,247,0.2); }
+.callout.warn { background:rgba(240,168,50,0.1); color:#f0c050; border:1px solid rgba(240,168,50,0.25); }
+.callout.good { background:rgba(62,207,142,0.1); color:#3ecf8e; border:1px solid rgba(62,207,142,0.25); }
 
-.row {
-  display: grid;
-  grid-template-columns: 36px 90px 150px 1fr;
-  gap: 0;
-  padding: 0;
-  border-bottom: 1px solid #1e2333;
-  align-items: start;
-}
-.row:hover { background: #181c27; }
+/* OPTIMIZE */
+#panel-opt { display:none; padding:0 0 80px 0; }
+#optContent { max-width:900px; padding:16px 16px 40px; }
+.opt-section { margin-bottom:16px; background:#181c27; border:1px solid #2a2f42; border-radius:10px; overflow:hidden; }
+.opt-head { display:flex; align-items:center; gap:10px; padding:12px 16px; background:#1e2333; border-bottom:1px solid #2a2f42; cursor:pointer; user-select:none; }
+.opt-head:hover { background:#252c40; }
+.opt-head-left { flex:1; }
+.opt-title { font-size:14px; font-weight:600; color:#e8eaf0; }
+.opt-sub { font-size:11px; color:#8b91a8; margin-top:2px; }
+.opt-rvu { font-family:"DM Mono",monospace; font-size:12px; color:#3ecf8e; font-weight:500; white-space:nowrap; }
+.opt-chev { color:#555d7a; font-size:11px; transition:transform 0.2s; flex-shrink:0; }
+.opt-section.open .opt-chev { transform:rotate(180deg); }
+.opt-body { display:none; padding:14px 16px; }
+.opt-section.open .opt-body { display:block; }
 
-.cell {
-  padding: 9px 10px;
-  align-self: start;
-}
-.cell-fav {
-  padding: 6px 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 9px;
-}
-.cell-code {
-  font-family: 'DM Mono', monospace;
-  font-size: 13px;
-  font-weight: 500;
-  color: #e8eaf0;
-  white-space: nowrap;
-}
-.cell-cat { }
-.cat-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-.cell-desc {
-  font-size: 13px;
-  color: #8b91a8;
-  line-height: 1.5;
-  word-break: break-word;
-}
-.note-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 5px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  background: rgba(79,142,247,0.12);
-  color: #7aabff;
-  border: 1px solid rgba(79,142,247,0.25);
-}
+.stack { background:#0f1117; border:1px solid #2a2f42; border-radius:8px; padding:12px 14px; margin-bottom:12px; }
+.stack:last-child { margin-bottom:0; }
+.stack-title { font-size:12px; font-weight:600; color:#e8eaf0; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.stack-title .badge-green { background:rgba(62,207,142,0.15); color:#3ecf8e; border:1px solid rgba(62,207,142,0.3); padding:1px 7px; border-radius:4px; font-size:10px; font-weight:600; }
+.stack-title .badge-gold { background:rgba(240,168,50,0.15); color:#f0a832; border:1px solid rgba(240,168,50,0.3); padding:1px 7px; border-radius:4px; font-size:10px; font-weight:600; }
+.code-stack { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+.cs-item { display:flex; align-items:center; gap:6px; background:#181c27; border:1px solid #2a2f42; border-radius:5px; padding:4px 10px; }
+.cs-code { font-family:"DM Mono",monospace; font-size:12px; color:#4f8ef7; font-weight:500; }
+.cs-mod { font-family:"DM Mono",monospace; font-size:10px; color:#f0a832; }
+.cs-desc { font-size:11px; color:#8b91a8; }
+.cs-plus { color:#555d7a; font-size:14px; font-weight:300; }
+.stack-rule { font-size:12px; color:#8b91a8; line-height:1.55; margin-bottom:6px; }
+.stack-doc { font-size:11px; color:#555d7a; margin-top:6px; }
+.stack-doc strong { color:#8b91a8; }
 
-.fav-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #555d7a;
-  font-size: 16px;
-  line-height: 1;
-  padding: 2px;
-  transition: color 0.15s;
+@media (max-width:580px) {
+  .row,.row-header { grid-template-columns:32px 68px 100px 1fr; }
+  .cell { padding:8px 6px; }
+  .cat-badge { font-size:10px; padding:2px 5px; }
+  .gc-row { grid-template-columns:70px 1fr; }
 }
-.fav-btn:hover { color: #f0a832; }
-.fav-btn.active { color: #f0a832; }
-
-#empty {
-  display: none;
-  text-align: center;
-  padding: 60px 20px;
-  color: #555d7a;
-  font-size: 14px;
-}
-
-#countRow {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  padding: 8px 16px;
-  font-size: 11px;
-  color: #555d7a;
-  background: #0f1117;
-  border-top: 1px solid #2a2f42;
-}
-
-@media (max-width: 580px) {
-  .row, .row-header {
-    grid-template-columns: 32px 72px 100px 1fr;
-  }
-  .cell { padding: 8px 6px; }
-  .cat-badge { font-size: 10px; padding: 2px 5px; }
-  .cell-code { font-size: 12px; }
-  .cell-desc { font-size: 12px; }
-}
-@media (max-width: 420px) {
-  .row, .row-header {
-    grid-template-columns: 30px 68px 1fr;
-  }
-  .cell-cat { display: none; }
-  .row-header .hdr-cat { display: none; }
+@media (max-width:420px) {
+  .row,.row-header { grid-template-columns:30px 65px 1fr; }
+  .cell-cat,.row-header .hdr-cat { display:none; }
 }
 </style>
 </head>
 <body>
 
-<div id="topbar">
-  <div class="logo">CPT<span>/</span>OrthoSports</div>
-  <input id="search" type="text" placeholder="ACL, rotator cuff, Bankart, Tommy John, SLAP..." oninput="filter()" autocomplete="off" spellcheck="false" />
-  <select id="catFilter" onchange="filter()">
-    <option value="">All categories</option>
-    <option value="General">General</option>
-    <option value="Hardware Removal">Hardware Removal</option>
-    <option value="Shoulder">Shoulder</option>
-    <option value="Arthroplasty">Arthroplasty</option>
-    <option value="Navigation & Planning">Navigation & Planning</option>
-    <option value="Humerus & Elbow">Humerus & Elbow</option>
-    <option value="Forearm & Wrist">Forearm & Wrist</option>
-    <option value="Hand & Fingers">Hand & Fingers</option>
-    <option value="Pelvis & Hip">Pelvis & Hip</option>
-    <option value="Femur & Knee">Femur & Knee</option>
-    <option value="Leg & Ankle">Leg & Ankle</option>
-    <option value="Foot & Toes">Foot & Toes</option>
-    <option value="Arthroscopy">Arthroscopy</option>
-    <option value="Neuroplasty">Neuroplasty</option>
-  </select>
-  <button id="favBtn" onclick="toggleFavMode()">☆ My codes</button>
+<!-- TAB BAR (always visible) -->
+<div id="tabBar">
+  <button class="tab active" id="tab-db" onclick="switchTab('db')">📋 CPT Database</button>
+  <button class="tab" id="tab-guide" onclick="switchTab('guide')">⚡ Billing Rules</button>
+  <button class="tab" id="tab-opt" onclick="switchTab('opt')">💰 Optimize</button>
 </div>
 
-<div id="statsBar"></div>
-
-<div id="listWrap">
-  <div class="row-header">
-    <span></span>
-    <span>Code</span>
-    <span class="hdr-cat">Category</span>
-    <span>Description</span>
+<!-- DATABASE PANEL -->
+<div id="panel-db">
+  <div id="topbar">
+    <div class="logo">CPT<span>/</span>OrthoSports</div>
+    <input id="search" type="text" placeholder="ACL, rotator cuff, Bankart, Tommy John, SLAP..." oninput="filter()" autocomplete="off" spellcheck="false" />
+    <select id="catFilter" onchange="filter()">
+      <option value="">All categories</option>
+      <option value="Hardware Removal">Hardware Removal</option>
+      <option value="General">General</option>
+      <option value="Shoulder">Shoulder</option>
+      <option value="Arthroplasty">Arthroplasty</option>
+      <option value="Navigation &amp; Planning">Navigation &amp; Planning</option>
+      <option value="Humerus &amp; Elbow">Humerus &amp; Elbow</option>
+      <option value="Forearm &amp; Wrist">Forearm &amp; Wrist</option>
+      <option value="Hand &amp; Fingers">Hand &amp; Fingers</option>
+      <option value="Pelvis &amp; Hip">Pelvis &amp; Hip</option>
+      <option value="Femur &amp; Knee">Femur &amp; Knee</option>
+      <option value="Leg &amp; Ankle">Leg &amp; Ankle</option>
+      <option value="Foot &amp; Toes">Foot &amp; Toes</option>
+      <option value="Arthroscopy">Arthroscopy</option>
+      <option value="Neuroplasty">Neuroplasty</option>
+    </select>
+    <button id="favBtn" onclick="toggleFavMode()">☆ My codes</button>
   </div>
-  <div id="rows"></div>
-  <div id="empty">🔍 No codes match your search.</div>
+  <div id="statsBar"></div>
+  <div id="listWrap">
+    <div class="row-header">
+      <span></span><span>Code</span><span class="hdr-cat">Category</span><span>Description</span>
+    </div>
+    <div id="rows"></div>
+    <div id="empty">🔍 No codes match your search.</div>
+  </div>
+  <div id="countRow"></div>
 </div>
 
-<div id="countRow"></div>
+<!-- GUIDE PANEL -->
+<div id="panel-guide">
+  <div id="guideContent"></div>
+</div>
+
+<!-- OPTIMIZE PANEL -->
+<div id="panel-opt" style="display:none;">
+  <div id="optContent"></div>
+</div>
 
 <script>
 const CAT_COLORS = {
@@ -718,7 +620,22 @@ const ALL = [
 
 let favs = new Set(JSON.parse(localStorage.getItem('cpt_favs')||'[]'));
 let showFavOnly = false;
+let guideBuilt = false;
 
+// ---- TAB SWITCHING ----
+var optBuilt = false;
+function switchTab(tab) {
+  document.getElementById('panel-db').style.display    = tab === 'db'    ? 'block' : 'none';
+  document.getElementById('panel-guide').style.display = tab === 'guide' ? 'block' : 'none';
+  document.getElementById('panel-opt').style.display   = tab === 'opt'   ? 'block' : 'none';
+  document.getElementById('tab-db').classList.toggle('active', tab === 'db');
+  document.getElementById('tab-guide').classList.toggle('active', tab === 'guide');
+  document.getElementById('tab-opt').classList.toggle('active', tab === 'opt');
+  if (tab === 'guide' && !guideBuilt) { buildGuide(); guideBuilt = true; }
+  if (tab === 'opt' && !optBuilt) { buildOpt(); optBuilt = true; }
+}
+
+// ---- DATABASE ----
 function saveFavs() { localStorage.setItem('cpt_favs', JSON.stringify([...favs])); }
 
 function toggleFavMode() {
@@ -732,7 +649,7 @@ function toggleFavMode() {
 function toggleCode(code) {
   if (favs.has(code)) favs.delete(code); else favs.add(code);
   saveFavs();
-  document.querySelectorAll(`[data-code="${code}"]`).forEach(btn => {
+  document.querySelectorAll('[data-code="'+code+'"]').forEach(btn => {
     btn.classList.toggle('active', favs.has(code));
     btn.textContent = favs.has(code) ? '★' : '☆';
   });
@@ -754,30 +671,660 @@ function render() {
     (r[4] && r[4].toLowerCase().includes(q))
   );
   document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
-  document.getElementById('countRow').textContent = `Showing ${rows.length} of ${ALL.length} codes`;
+  document.getElementById('countRow').textContent = 'Showing ' + rows.length + ' of ' + ALL.length + ' codes';
   const container = document.getElementById('rows');
-  container.innerHTML = rows.map(([code, cat, desc, note]) => {
-    const c = CAT_COLORS[cat] || {bg:'#222',color:'#aaa'};
-    return `<div class="row">
-      <div class="cell-fav"><button class="fav-btn${favs.has(code)?' active':''}" data-code="${code}" onclick="toggleCode('${code}')">${favs.has(code)?'★':'☆'}</button></div>
-      <div class="cell cell-code">${code}</div>
-      <div class="cell cell-cat"><span class="cat-badge" style="background:${c.bg};color:${c.color};">${cat}</span></div>
-      <div class="cell cell-desc">${desc}${note?`<br><span class="note-tag">ℹ ${note}</span>`:''}</div>
-    </div>`;
+  container.innerHTML = rows.map(function(r) {
+    var code=r[0], cat=r[1], desc=r[2], note=r[3];
+    var c = CAT_COLORS[cat] || {bg:'#222',color:'#aaa'};
+    return '<div class="row">'
+      + '<div class="cell-fav"><button class="fav-btn' + (favs.has(code)?' active':'') + '" data-code="' + code + '" onclick="toggleCode(\'' + code + '\')">' + (favs.has(code)?'★':'☆') + '</button></div>'
+      + '<div class="cell cell-code">' + code + '</div>'
+      + '<div class="cell cell-cat"><span class="cat-badge" style="background:' + c.bg + ';color:' + c.color + ';">' + cat + '</span></div>'
+      + '<div class="cell cell-desc">' + desc + (note ? '<br><span class="note-tag">ℹ ' + note + '</span>' : '') + '</div>'
+      + '</div>';
   }).join('');
 }
 
 function updateStats() {
-  const counts = {};
-  ALL.forEach(([,cat]) => counts[cat] = (counts[cat]||0)+1);
-  const bar = document.getElementById('statsBar');
-  bar.innerHTML = `<span class="pill">★ ${favs.size} saved</span>`
-    + Object.entries(counts).map(([c,n]) => {
-        const col = CAT_COLORS[c]||{bg:'#222',color:'#aaa'};
-        return `<span class="pill" style="background:${col.bg};color:${col.color};border-color:${col.color}44;" onclick="document.getElementById('catFilter').value='${c}';filter();">${c} <strong>${n}</strong></span>`;
+  var counts = {};
+  ALL.forEach(function(r){ counts[r[1]] = (counts[r[1]]||0)+1; });
+  var bar = document.getElementById('statsBar');
+  bar.innerHTML = '<span class="pill">★ ' + favs.size + ' saved</span>'
+    + Object.entries(counts).map(function(e){
+        var col = CAT_COLORS[e[0]]||{bg:'#222',color:'#aaa'};
+        return '<span class="pill" style="background:'+col.bg+';color:'+col.color+';border-color:'+col.color+'44;" onclick="document.getElementById(\'catFilter\').value=\''+e[0]+'\';filter();">'+e[0]+' <strong>'+e[1]+'</strong></span>';
       }).join('');
 }
 
+// ---- BILLING GUIDE ----
+var GUIDE = [
+  { title:"Shoulder Arthroscopy", sub:"29822 · 29823 · 29826 · 29827 · 29828 · 29806", codes:[
+    { code:"29822", name:"Debridement, Limited",
+      rule:"Addresses <strong>1–2 discrete pathologic structures</strong>. Examples: chondroplasty of one surface, partial synovectomy, resection of a small SLAP flap, trimming of a partial-thickness cuff tear.",
+      tips:[{t:"info",x:"Isolated subacromial bursectomy alone = 29822, not 29823."}]
+    },
+    { code:"29823", name:"Debridement, Extensive",
+      rule:"Requires <strong>3 or more discrete pathologic structures</strong>. Common combination: chondroplasty + synovectomy + partial cuff debridement. Also the standard code for <strong>remplissage</strong> (posterior capsule/infraspinatus tenodesis into Hill-Sachs defect), billed alongside 29806.",
+      tips:[
+        {t:"info",x:"Document each structure treated separately in your op note to justify 29823 over 29822."},
+        {t:"warn",x:"Remplissage: bill 29806 + 29823. Some payers bundle — use 29999 with cover letter if denied."}
+      ]
+    },
+    { code:"29826", name:"Subacromial Decompression + Acromioplasty",
+      rule:"Includes bursectomy + CA ligament release + partial acromioplasty. Billable alongside 29827 as an add-on. Requires documentation of bony work (acromioplasty), not just bursectomy.",
+      tips:[{t:"good",x:"29826 + 29827 (RCR + SAD) is a well-accepted, common combination."}]
+    },
+    { code:"29827", name:"Rotator Cuff Repair",
+      rule:"Full-thickness or high-grade partial-thickness (>50%) rotator cuff repair. Covers all anchors, suture passing, and knot tying for the repair — not billed per tendon repaired.<br><br>Partial tear &lt;50%: debride → 29822 or 29823.<br>Partial converted to full and repaired → 29827.<br>SCR with dermal allograft → 29827 + document allograft.",
+      tips:[
+        {t:"info",x:"Biceps tenotomy performed at the same time as RCR is bundled — not separately billable."},
+        {t:"good",x:"29827 + 29828 (RCR + biceps tenodesis): separately billable, use -59 on 29828."}
+      ]
+    },
+    { code:"29828", name:"Biceps Tenodesis",
+      rule:"Arthroscopic or mini-open biceps tenodesis (subpectoral or suprapectoral). Requires fixation of LHBT to bone with anchor, interference screw, or tenodesis screw. Separately billable from 29827 with -59 modifier.",
+      tips:[{t:"good",x:"29827 + 29828 is well-accepted. Always add -59 modifier to 29828."}]
+    },
+    { code:"29806", name:"Capsulorrhaphy (Bankart, Remplissage)",
+      rule:"Arthroscopic Bankart repair, posterior labral repair, or capsular plication. Remplissage = 29806 + 29823.<br><br>Arthroscopic Latarjet: most bill 29999 (unlisted), citing 23462 as the comparable code in a cover letter.",
+      tips:[{t:"info",x:"Arthroscopic Bankart + SLAP repair: 29806 + 29807 with -59 modifier on 29807."}]
+    },
+  ]},
+  { title:"Knee Arthroscopy", sub:"29877 · 29879 · 29880 · 29881 · 29882 · 29888", codes:[
+    { code:"29877", name:"Chondroplasty / Debridement",
+      rule:"Shaving or debridement of articular cartilage. <strong>Bundled with meniscectomy (29880/29881) when done in the same compartment</strong> — cannot be billed separately in the same compartment as meniscectomy.",
+      tips:[{t:"warn",x:"29877 in same compartment as 29881 will be denied. Only bill 29881 — chondroplasty is included."}]
+    },
+    { code:"29879", name:"Microfracture / Abrasion / Drilling",
+      rule:"Microfracture, abrasion arthroplasty, or multiple drilling for cartilage restoration. Separately billable from meniscectomy in a different compartment. Document lesion size, location, and number of microfracture holes.",
+      tips:[{t:"good",x:"29879 (microfracture MFC) + 29881 (lateral meniscectomy): billable — different compartments. Use -59 on 29879."}]
+    },
+    { code:"29880", name:"Meniscectomy, Medial AND Lateral",
+      rule:"Partial or total meniscectomy of both menisci. Includes chondroplasty in same compartments. One code covers both sides — do not bill 29881 twice.",
+      tips:[{t:"info",x:"Repair one side, resect the other: 29882 (repair) + 29881 (resection other side) with -59."}]
+    },
+    { code:"29881", name:"Meniscectomy, Medial OR Lateral",
+      rule:"Partial or total meniscectomy of one meniscus. Includes chondroplasty in same compartment. Document which meniscus, tear pattern, and amount resected.",
+      tips:[{t:"warn",x:"Chondroplasty same compartment = bundled. Opposite compartment: add 29877 with -59."}]
+    },
+    { code:"29882", name:"Meniscus Repair, Medial OR Lateral",
+      rule:"All-inside, inside-out, or outside-in meniscal repair. <strong>Includes root repairs and ramp lesion repairs.</strong> Document technique, number of sutures/implants, tear location (anterior, body, posterior horn, root).",
+      tips:[
+        {t:"info",x:"Meniscal root repair = 29882. Document root tear pattern and suture/anchor fixation technique."},
+        {t:"info",x:"Ramp lesion repair = 29882. Document posterior capsulomeniscal repair with suture hook technique."},
+        {t:"good",x:"29882 + 29888 (meniscus repair + ACL recon) is a very common, well-accepted combination."}
+      ]
+    },
+    { code:"29888", name:"ACL Reconstruction",
+      rule:"Covers all graft types: BTB, hamstring, quad tendon, allograft. Includes tunnel drilling, graft passage, and all fixation. Graft harvest is included — not separately billable.<br><br><strong>Common add-ons with 29888:</strong><ul><li>29882 — meniscus repair (-59)</li><li>29881 — meniscectomy (-59)</li><li>27427 — LET/lateral tenodesis (-51)</li><li>29879 — microfracture (-59)</li><li>29877 — chondroplasty different compartment (-59)</li></ul>",
+      tips:[
+        {t:"warn",x:"LET (27427) with ACL (29888): use -51 modifier. Some payers bundle — verify with your payer first."},
+        {t:"good",x:"BEAR primary ACL repair: still bill 29888 — no separate primary repair code exists."}
+      ]
+    },
+  ]},
+  { title:"Hip Arthroscopy", sub:"29914 · 29915 · 29916 · 29862", codes:[
+    { code:"29914", name:"Femoroplasty (Cam Lesion)",
+      rule:"Osteochondroplasty of the femoral head-neck junction for cam FAI. Separately billable from acetabuloplasty and labral repair. Document degrees of arc resected and depth of bone removed.",
+      tips:[{t:"good",x:"29914 + 29915 + 29916 (cam + pincer + labral repair) is well-accepted. Use -51 modifiers on add-ons."}]
+    },
+    { code:"29915", name:"Acetabuloplasty (Pincer Lesion)",
+      rule:"Rim resection for pincer FAI. Separately billable from femoroplasty and labral repair with -59 modifier. Document acetabular overcoverage on preop imaging and intraoperative extent of rim resection.",
+      tips:[]
+    },
+    { code:"29916", name:"Labral Repair",
+      rule:"Labral refixation with suture anchors. Separately billable from femoroplasty and acetabuloplasty. Document number of anchors, extent of tear, and repair technique.<br><br>Labral reconstruction with allograft: bill 29916 + document allograft. Some payers require 29999 for reconstruction.",
+      tips:[
+        {t:"info",x:"Labral debridement only (no repair): use 29862 instead of 29916."},
+        {t:"warn",x:"Labral reconstruction with allograft: payer acceptance of 29916 varies — some require 29999 with cover letter."}
+      ]
+    },
+  ]},
+  { title:"Open Rotator Cuff", sub:"23410 · 23412 · 23420", codes:[
+    { code:"23410", name:"Open RCR, Acute",
+      rule:"Open repair of acute rotator cuff tear — typically within 6 weeks of injury. Requires documentation of acuity, mechanism, and time from injury.",
+      tips:[{t:"info",x:"Acute traumatic full-thickness tear repaired openly = 23410. Chronic presentation even with acute tear = 23412."}]
+    },
+    { code:"23412", name:"Open RCR, Chronic",
+      rule:"Open repair of chronic rotator cuff tear. Most open RCR falls here. Includes mobilization, margin convergence, and tendon transfers if needed. Patch augmentation or SCR done open: bill 23412 + document allograft/patch separately.",
+      tips:[]
+    },
+    { code:"23420", name:"Reconstruction, Complete Cuff Avulsion",
+      rule:"Reserved for <strong>complete</strong> cuff avulsion with chronic irreparable tear. Higher-value code than 23412. Requires documentation of complete avulsion and reconstruction — not just repair.",
+      tips:[{t:"warn",x:"Do not upcode 23412 to 23420 unless truly a complete avulsion — this code is heavily audited."}]
+    },
+  ]},
+  { title:"Shoulder Instability — Open", sub:"23455 · 23460 · 23462 · 23465", codes:[
+    { code:"23455", name:"Open Bankart Repair",
+      rule:"Open anterior capsulorrhaphy with labral repair and capsular shift. Document anterior labral detachment, capsular laxity, and fixation method (anchors or transosseous).",
+      tips:[{t:"info",x:"Most Bankart repairs are now arthroscopic (29806). Use 23455 for open cases or conversions from scope."}]
+    },
+    { code:"23460", name:"Capsulorrhaphy + Bone Block",
+      rule:"Anterior stabilization with a separate bone block (Eden-Hybinette type, distal tibia allograft). Not the same as Latarjet — requires a separate bone graft, not coracoid transfer.",
+      tips:[{t:"info",x:"Distal tibia allograft bone block: bill 23460 + allograft implant charge separately."}]
+    },
+    { code:"23462", name:"Coracoid Transfer (Latarjet)",
+      rule:"Open Latarjet — coracoid process transfer with conjoint tendon sling. For <strong>arthroscopic Latarjet</strong>: bill 29999 (unlisted), citing 23462 as the comparable code in your cover letter.",
+      tips:[
+        {t:"info",x:"Arthroscopic Latarjet: use 29999, cite 23462 as comparable, submit op note + cover letter."},
+        {t:"warn",x:"Do not bill 23460 for Latarjet — 23462 is correct (coracoid transfer, not a separate bone block graft)."}
+      ]
+    },
+    { code:"23465", name:"Posterior Capsulorrhaphy",
+      rule:"Open posterior shoulder stabilization with capsular imbrication ± bone block. Document direction of instability, capsular laxity, and any labral repair performed.",
+      tips:[{t:"info",x:"Posterior labral repair done arthroscopically = 29806, not 23465."}]
+    },
+  ]},
+  { title:"Knee — Patella & Osteotomies", sub:"27418 · 27422 · 27427 · 27457", codes:[
+    { code:"27418", name:"Tibial Tubercle Anteriorization (Fulkerson/Maquet)",
+      rule:"Anterior elevation of the tibial tubercle to reduce patellofemoral contact pressure. Covers Maquet and Fulkerson anteriorization. Separately billable from medialization (27422) but commonly combined as an anteromedialization (AMZ/Fulkerson).",
+      tips:[{t:"info",x:"Fulkerson AMZ: bill 27418 (anteriorization) + 27422 (medialization/extensor realignment) together."}]
+    },
+    { code:"27422", name:"Extensor Realignment / VMO Advancement",
+      rule:"Reconstruction of dislocating patella with extensor realignment, muscle advancement, or release. Covers VMO advancement, medial retinaculum imbrication, Goldthwaite, Campbell-type procedures, and the medialization component of a Fulkerson TTO.",
+      tips:[{t:"good",x:"VMO advancement + medial retinaculum imbrication = 27422. Document both components in op note."}]
+    },
+    { code:"27427", name:"LET / Extra-Articular Tenodesis",
+      rule:"Extra-articular ligamentous reconstruction. Covers: <strong>Modified Lemaire LET, MacIntosh ITB tenodesis, PLC reconstruction, and MPFL reconstruction</strong>.<br><br>When combined with ACL (29888): bill 27427 with <strong>-51 modifier</strong>.",
+      tips:[
+        {t:"info",x:"ACL + LET: 29888 (primary, no modifier) + 27427-51 (add-on with -51)."},
+        {t:"warn",x:"Some payers bundle 27427 with 29888. If denied, appeal with 29999 and operative note."}
+      ]
+    },
+    { code:"27457", name:"High Tibial Osteotomy (HTO)",
+      rule:"Proximal tibial osteotomy after physeal closure — opening or closing wedge for varus/valgus correction. Includes internal fixation. Document preop alignment, planned correction in degrees, and fixation device.",
+      tips:[{t:"good",x:"HTO + ACL reconstruction in same setting: 27457 + 29888 — both are separately billable."}]
+    },
+  ]},
+  { title:"Ankle — Ligament & Arthroscopy", sub:"27695 · 27698 · 29897 · 29898", codes:[
+    { code:"27695", name:"Ankle Ligament Repair, Primary (Brostrom)",
+      rule:"Primary repair of ATFL ± CFL. Covers Brostrom-Gould with extensor retinaculum augmentation and InternalBrace augmentation. Document ligament quality, repair technique, and any augmentation used.",
+      tips:[
+        {t:"good",x:"Brostrom-Gould + InternalBrace = 27695. The augmentation is included — not separately billable."},
+        {t:"info",x:"Both ATFL and CFL repaired: use 27696 (both collateral ligaments) instead of 27695."}
+      ]
+    },
+    { code:"27698", name:"Ankle Ligament Reconstruction, Secondary",
+      rule:"Chronic instability with reconstruction requiring graft or tendon transfer (Watson-Jones, Chrisman-Snook, allograft). Use when primary tissue is inadequate.",
+      tips:[{t:"warn",x:"If primary tissue is used even in a chronic setting, 27695 may still apply. 27698 is reserved for true graft reconstruction."}]
+    },
+    { code:"29897", name:"Ankle Arthroscopy, Debridement Limited",
+      rule:"Addresses 1–2 structures: synovectomy, chondroplasty, anterior impingement debridement, loose body removal. Use when scope work is focused.",
+      tips:[]
+    },
+    { code:"29898", name:"Ankle Arthroscopy, Debridement Extensive",
+      rule:"Addresses <strong>3 or more structures</strong>: anterior osteophyte excision + synovectomy + chondroplasty + loose body removal. Same threshold concept as shoulder 29823.",
+      tips:[{t:"info",x:"Document each distinct structure addressed to support 29898 over 29897."}]
+    },
+  ]},
+  { title:"Elbow", sub:"24346 · 24342 · 24344", codes:[
+    { code:"24346", name:"UCL Reconstruction (Tommy John)",
+      rule:"Reconstruction of medial collateral (ulnar collateral) ligament with tendon graft. Covers palmaris, gracilis, or allograft. All techniques bill the same: docking, DANE TJ, modified Jobe. Graft harvest included.",
+      tips:[
+        {t:"info",x:"Gracilis harvest: some bill 20924 separately — verify with your payer."},
+        {t:"info",x:"Ulnar nerve transposition at same setting: add 64718 with -51 modifier."}
+      ]
+    },
+    { code:"24342", name:"Distal Biceps Repair",
+      rule:"Reinsertion of ruptured distal biceps to radial tuberosity. Single-incision (endobutton, suture anchor) or double-incision technique. Covers both acute repair and repairs with graft augmentation.",
+      tips:[]
+    },
+    { code:"24344", name:"LCL/LUCL Reconstruction",
+      rule:"Reconstruction of lateral collateral ligament complex (LUCL) with tendon graft for posterolateral rotatory instability (PLRI). Document instability direction, graft source, and fixation.",
+      tips:[{t:"info",x:"Acute LCL repair with local tissue = 24343. Chronic reconstruction with graft = 24344."}]
+    },
+  ]},
+  { title:"Modifiers — Quick Reference", sub:"-51 · -59 · -22 · -RT/-LT", codes:[
+    { code:"-51", name:"Multiple Procedures",
+      rule:"Applied to secondary procedures when billing multiple surgeries same day, same surgeon. Reduces reimbursement of secondary code by ~50%. Primary code (highest RVU) gets no modifier.",
+      tips:[{t:"info",x:"Examples: 29888 (no modifier) + 27427-51 for ACL + LET. 29827 (no modifier) + 29826-51 for RCR + SAD."}]
+    },
+    { code:"-59", name:"Distinct Procedural Service",
+      rule:"Identifies a procedure as distinct and independent from another billed the same day. Prevents bundling when procedures are in different anatomic sites or compartments.",
+      tips:[{t:"warn",x:"-59 is heavily audited. Must be truly distinct — different site, different compartment, or different indication."}]
+    },
+    { code:"-22", name:"Increased Complexity",
+      rule:"Used when a procedure is significantly more complex than typical — revision surgery, severe obesity, altered anatomy, prolonged OR time. Requires a cover letter with operative documentation.",
+      tips:[{t:"warn",x:"-22 is frequently denied. Submit with a strong op note excerpt explaining specifically what made the case unusual."}]
+    },
+    { code:"-RT/-LT", name:"Right / Left Side",
+      rule:"Always use RT or LT on unilateral procedures to specify operative side. Required by most payers — claims may deny without it.",
+      tips:[]
+    },
+  ]},
+];
+
+function buildGuide() {
+  var el = document.getElementById('guideContent');
+  el.innerHTML = GUIDE.map(function(s, si) {
+    return '<div class="gs" id="gs-'+si+'">'
+      + '<div class="gs-head" onclick="toggleGs('+si+')">'
+      + '<div><div class="gs-title">'+s.title+'</div><div class="gs-sub">'+s.sub+'</div></div>'
+      + '<span class="gs-chev">▼</span>'
+      + '</div>'
+      + '<div class="gs-body">'
+      + s.codes.map(function(c) {
+          return '<div class="gc-row">'
+            + '<div class="gc-code">'+c.code+'</div>'
+            + '<div><div class="gc-name">'+c.name+'</div>'
+            + '<div class="gc-rule">'+c.rule+'</div>'
+            + c.tips.map(function(tip){
+                return '<div class="callout '+tip.t+'">'
+                  + '<span>'+(tip.t==='warn'?'⚠':tip.t==='good'?'✓':'ℹ')+'</span>'
+                  + '<span>'+tip.x+'</span></div>';
+              }).join('')
+            + '</div></div>';
+        }).join('')
+      + '</div></div>';
+  }).join('');
+  // open first section by default
+  toggleGs(0);
+}
+
+function toggleGs(i) {
+  var el = document.getElementById('gs-'+i);
+  if (el) el.classList.toggle('open');
+}
+
+// ---- OPTIMIZE ----
+var OPT = [
+  {
+    title:"Reverse Total Shoulder Arthroplasty — Fracture",
+    sub:"Maximize billing for proximal humerus fractures treated with RTSA",
+    combos:[
+      {
+        label:"RTSA + Greater Tuberosity ORIF",
+        badge:"gold",
+        codes:[
+          {code:"23472", mod:"", desc:"Reverse total shoulder arthroplasty"},
+          {code:"+", mod:"", desc:""},
+          {code:"23630", mod:"-51", desc:"Open treatment greater tuberosity fracture"},
+        ],
+        rule:"When performing RTSA for a proximal humerus fracture and you separately address the greater tuberosity — fixing it with sutures, cables, or screws — bill 23630 as an add-on. This is separately billable work and is frequently missed. Document tuberosity repair as a distinct step.",
+        doc:"Op note must describe: (1) separate identification of the GT fragment, (2) reduction technique, (3) fixation method (suture, cable, screw). Do not just mention it in passing."
+      },
+      {
+        label:"RTSA + Biceps Tenodesis",
+        badge:"green",
+        codes:[
+          {code:"23472", mod:"", desc:"Reverse total shoulder arthroplasty"},
+          {code:"+", mod:"", desc:""},
+          {code:"23430", mod:"-51", desc:"Biceps tenodesis (open)"},
+        ],
+        rule:"If the long head of biceps is pathologic and you perform a formal tenodesis (subpectoral or soft tissue) at the time of RTSA, 23430 is separately billable. Tenotomy alone is NOT separately billable — must be a formal tenodesis with fixation.",
+        doc:"Document: LHBT pathology noted, formal tenodesis performed with [anchor/tenodesis screw/soft tissue fixation], location of fixation."
+      },
+      {
+        label:"RTSA + Clavicle/AC Pathology",
+        badge:"green",
+        codes:[
+          {code:"23472", mod:"", desc:"Reverse total shoulder arthroplasty"},
+          {code:"+", mod:"", desc:""},
+          {code:"23120", mod:"-51", desc:"Distal claviculectomy (Mumford)"},
+        ],
+        rule:"If symptomatic AC arthritis is addressed with a distal claviculectomy at the time of shoulder arthroplasty, this is separately billable. Requires separate documentation and distinct surgical step.",
+        doc:"Document: preop AC symptoms, intraoperative distal clavicle excision performed as separate step, amount of bone removed."
+      },
+    ]
+  },
+  {
+    title:"Anatomic Total Shoulder Arthroplasty",
+    sub:"Common add-on codes for TSA",
+    combos:[
+      {
+        label:"TSA + Subscapularis Repair",
+        badge:"green",
+        codes:[
+          {code:"23472", mod:"", desc:"Total shoulder arthroplasty"},
+          {code:"+", mod:"", desc:""},
+          {code:"23410", mod:"-51", desc:"Rotator cuff repair (subscapularis)"},
+        ],
+        rule:"Formal subscapularis repair at time of TSA — especially if done as a tenotomy-and-repair or lesser tuberosity osteotomy repair — can be billed as a rotator cuff repair (23410 acute, 23412 chronic). Not all payers accept this; document the repair as a distinct step beyond routine closure.",
+        doc:"Document: subscapularis takedown method, quality of tissue, repair technique and anchor/suture count."
+      },
+      {
+        label:"TSA + Biceps Tenodesis",
+        badge:"gold",
+        codes:[
+          {code:"23472", mod:"", desc:"Total shoulder arthroplasty"},
+          {code:"+", mod:"", desc:""},
+          {code:"23430", mod:"-51", desc:"Biceps tenodesis (open)"},
+        ],
+        rule:"Same rule as RTSA — formal biceps tenodesis (not tenotomy) with fixation at time of TSA is separately billable.",
+        doc:"Document LHBT pathology and formal fixation technique."
+      },
+    ]
+  },
+  {
+    title:"ACL Reconstruction",
+    sub:"Maximize billing for ACL and associated pathology",
+    combos:[
+      {
+        label:"ACL + Meniscus Repair + Chondroplasty",
+        badge:"gold",
+        codes:[
+          {code:"29888", mod:"", desc:"ACL reconstruction"},
+          {code:"+", mod:"", desc:""},
+          {code:"29882", mod:"-59", desc:"Meniscus repair (medial OR lateral)"},
+          {code:"+", mod:"", desc:""},
+          {code:"29877", mod:"-59", desc:"Chondroplasty (opposite compartment)"},
+        ],
+        rule:"ACL + meniscus repair is a very common and accepted combination. Add chondroplasty if done in a different compartment from the meniscus work. Chondroplasty in the same compartment as meniscectomy is bundled — only bill it if in a separate compartment.",
+        doc:"Document each compartment entered, pathology found, and procedure performed in each separately."
+      },
+      {
+        label:"ACL + Lateral Extra-Articular Tenodesis (LET)",
+        badge:"gold",
+        codes:[
+          {code:"29888", mod:"", desc:"ACL reconstruction"},
+          {code:"+", mod:"", desc:""},
+          {code:"27427", mod:"-51", desc:"LET / Modified Lemaire / ITB tenodesis"},
+        ],
+        rule:"LET (Modified Lemaire, MacIntosh) performed alongside ACL reconstruction. Bill 27427 with -51 modifier. Revenue impact is significant — 27427 carries meaningful RVUs. Verify payer policy first; some bundle it. If bundled, appeal or use 29999.",
+        doc:"Document LET as a distinct surgical step: ITB strip harvested, tunneled, fixed distally. Separate from ACL graft work."
+      },
+      {
+        label:"ACL + Microfracture",
+        badge:"green",
+        codes:[
+          {code:"29888", mod:"", desc:"ACL reconstruction"},
+          {code:"+", mod:"", desc:""},
+          {code:"29879", mod:"-59", desc:"Microfracture / abrasion arthroplasty"},
+        ],
+        rule:"Microfracture for a chondral defect performed at the time of ACL reconstruction is separately billable in a different compartment. Document defect size, location, and number of microfracture holes created.",
+        doc:"Document: chondral defect grade, size in cm², compartment, number of microfracture holes, and marrow fat drops visualized."
+      },
+      {
+        label:"ACL + Tibial Spine Fixation",
+        badge:"green",
+        codes:[
+          {code:"29888", mod:"", desc:"ACL reconstruction"},
+          {code:"+", mod:"", desc:""},
+          {code:"29851", mod:"-59", desc:"Tibial spine fracture fixation (arthroscopic)"},
+        ],
+        rule:"In revision or complex ACL cases with an avulsion component, if tibial spine fixation is performed as a separate procedure, 29851 can be added. Rare scenario but billable when documented as distinct work.",
+        doc:"Document tibial eminence avulsion, separate fixation step performed prior to or after tunnel preparation."
+      },
+    ]
+  },
+  {
+    title:"Rotator Cuff Repair",
+    sub:"Common add-ons that are frequently missed",
+    combos:[
+      {
+        label:"RCR + SAD + Biceps Tenodesis",
+        badge:"gold",
+        codes:[
+          {code:"29827", mod:"", desc:"Rotator cuff repair"},
+          {code:"+", mod:"", desc:""},
+          {code:"29826", mod:"-51", desc:"Subacromial decompression"},
+          {code:"+", mod:"", desc:""},
+          {code:"29828", mod:"-59", desc:"Biceps tenodesis"},
+        ],
+        rule:"This triple combination is one of the highest-value shoulder arthroscopy bills. All three are separately billable and routinely accepted. Biceps tenodesis must be a formal fixation — not tenotomy. Tenotomy alone is bundled and not separately payable.",
+        doc:"Document: (1) bony acromioplasty performed (not just bursectomy) for 29826, (2) LHBT pathology and formal tenodesis with fixation method for 29828."
+      },
+      {
+        label:"RCR + SLAP Repair",
+        badge:"green",
+        codes:[
+          {code:"29827", mod:"", desc:"Rotator cuff repair"},
+          {code:"+", mod:"", desc:""},
+          {code:"29807", mod:"-59", desc:"SLAP repair"},
+        ],
+        rule:"SLAP repair performed at the time of RCR is separately billable with -59 modifier. Must be a true superior labral tear with repair (anchors) — not just fraying or debridement (which is included in 29822/29823).",
+        doc:"Document: SLAP tear type, anchor count, suture configuration. Distinguish from biceps anchor pathology."
+      },
+      {
+        label:"RCR + Distal Claviculectomy (Mumford)",
+        badge:"green",
+        codes:[
+          {code:"29827", mod:"", desc:"Rotator cuff repair"},
+          {code:"+", mod:"", desc:""},
+          {code:"29824", mod:"-51", desc:"Distal claviculectomy (Mumford)"},
+        ],
+        rule:"AC joint resection performed at time of RCR is separately billable. Requires preop AC symptoms and/or intraoperative finding of AC arthritis. Commonly missed — easy add-on when clinically indicated.",
+        doc:"Document preop AC symptoms, positive O'Brien/cross-body, and intraoperative distal clavicle resection (amount removed, technique)."
+      },
+      {
+        label:"RCR + Labral Repair",
+        badge:"green",
+        codes:[
+          {code:"29827", mod:"", desc:"Rotator cuff repair"},
+          {code:"+", mod:"", desc:""},
+          {code:"29806", mod:"-59", desc:"Capsulorrhaphy / labral repair"},
+        ],
+        rule:"Posterior labral tear or capsular repair performed at the time of RCR is separately billable as 29806. Common in internal impingement cases. Document labral tear and repair as distinct from cuff pathology.",
+        doc:"Document posterior labral tear found at arthroscopy, anchor placement and repair technique separate from cuff work."
+      },
+    ]
+  },
+  {
+    title:"Shoulder Instability",
+    sub:"Stacking codes for instability procedures",
+    combos:[
+      {
+        label:"Bankart + Remplissage",
+        badge:"gold",
+        codes:[
+          {code:"29806", mod:"", desc:"Capsulorrhaphy / Bankart repair"},
+          {code:"+", mod:"", desc:""},
+          {code:"29823", mod:"-51", desc:"Extensive debridement (remplissage)"},
+        ],
+        rule:"Remplissage (posterior capsule and infraspinatus tenodesis into Hill-Sachs defect) is billed as 29823 added to the Bankart repair (29806). Well-established billing combination. If payer bundles, consider 29999 with documentation comparing to 29823.",
+        doc:"Document Hill-Sachs defect size, posterior capsule and infraspinatus tenodesis into defect with anchor fixation, as separate step from anterior Bankart repair."
+      },
+      {
+        label:"Bankart + SAD + Mumford",
+        badge:"green",
+        codes:[
+          {code:"29806", mod:"", desc:"Bankart repair"},
+          {code:"+", mod:"", desc:""},
+          {code:"29826", mod:"-51", desc:"Subacromial decompression"},
+          {code:"+", mod:"", desc:""},
+          {code:"29824", mod:"-51", desc:"Distal claviculectomy"},
+        ],
+        rule:"If subacromial pathology and AC arthritis are addressed at the time of Bankart repair, each is separately billable. Requires clinical indication and operative documentation for each.",
+        doc:"Document each separately: subacromial bursitis with bony acromioplasty; AC joint arthritis with distal clavicle resection."
+      },
+    ]
+  },
+  {
+    title:"Hip Arthroscopy — FAI",
+    sub:"Triple billing and add-ons for FAI",
+    combos:[
+      {
+        label:"Cam + Pincer + Labral Repair (Triple)",
+        badge:"gold",
+        codes:[
+          {code:"29914", mod:"", desc:"Femoroplasty (cam)"},
+          {code:"+", mod:"", desc:""},
+          {code:"29915", mod:"-51", desc:"Acetabuloplasty (pincer)"},
+          {code:"+", mod:"", desc:""},
+          {code:"29916", mod:"-51", desc:"Labral repair"},
+        ],
+        rule:"This triple combination is the standard for combined FAI with labral pathology. All three are separately payable and widely accepted. Each procedure must be individually documented. Do not combine into a single narrative.",
+        doc:"Document separately: (1) cam deformity — degrees of arc and depth of femoroplasty; (2) pincer — acetabular rim resection with amount removed; (3) labral tear — anchor count, repair technique, and labral tissue quality."
+      },
+      {
+        label:"FAI + Chondroplasty",
+        badge:"green",
+        codes:[
+          {code:"29914", mod:"", desc:"Femoroplasty"},
+          {code:"+", mod:"", desc:""},
+          {code:"29862", mod:"-51", desc:"Hip arthroscopy with chondroplasty/debridement"},
+        ],
+        rule:"Chondroplasty of the femoral head or acetabular cartilage performed at the time of femoroplasty is separately billable as 29862. Document cartilage defect grade, size, and location.",
+        doc:"Document articular cartilage lesion separately from bony FAI work — grade, location (femoral head vs acetabulum), and treatment (shaving, debridement)."
+      },
+    ]
+  },
+  {
+    title:"Knee — Patella Stabilization",
+    sub:"TTO and soft tissue procedure stacking",
+    combos:[
+      {
+        label:"Fulkerson AMZ Osteotomy (Full Stack)",
+        badge:"gold",
+        codes:[
+          {code:"27418", mod:"", desc:"Anteriorization (Fulkerson/Maquet)"},
+          {code:"+", mod:"", desc:""},
+          {code:"27422", mod:"-51", desc:"Extensor realignment / medialization"},
+          {code:"+", mod:"", desc:""},
+          {code:"29873", mod:"-51", desc:"Arthroscopic lateral release (if done)"},
+        ],
+        rule:"A Fulkerson AMZ is an anteromedialization — it has two distinct components that each have their own CPT code. Bill 27418 for the anterior elevation component AND 27422 for the medialization/extensor realignment component. If a lateral retinacular release is also performed arthroscopically at the same setting, add 29873.",
+        doc:"Op note must describe both the anterior and medial displacement of the tubercle as distinct goals of the osteotomy."
+      },
+      {
+        label:"MPFL Reconstruction + Diagnostic Arthroscopy",
+        badge:"green",
+        codes:[
+          {code:"27427", mod:"", desc:"Extra-articular ligamentous reconstruction (MPFL)"},
+          {code:"+", mod:"", desc:""},
+          {code:"29870", mod:"-51", desc:"Diagnostic knee arthroscopy"},
+        ],
+        rule:"If a diagnostic arthroscopy is performed at the time of MPFL reconstruction to evaluate intra-articular pathology, 29870 can be added. If additional intra-articular work is done (e.g. chondroplasty), upcode the arthroscopy accordingly.",
+        doc:"Document intra-articular evaluation as a distinct step, findings in each compartment, and rationale for arthroscopy at same setting."
+      },
+    ]
+  },
+  {
+    title:"Ankle",
+    sub:"Brostrom add-ons and arthroscopy combinations",
+    combos:[
+      {
+        label:"Brostrom + Ankle Arthroscopy",
+        badge:"gold",
+        codes:[
+          {code:"27695", mod:"", desc:"Ankle ligament repair (Brostrom-Gould)"},
+          {code:"+", mod:"", desc:""},
+          {code:"29898", mod:"-51", desc:"Ankle arthroscopy, extensive debridement"},
+        ],
+        rule:"Ankle arthroscopy performed at the time of Brostrom repair for anterior impingement, synovitis, chondroplasty, or loose body removal is separately billable. Very common combination — frequently missed. Use 29897 if 1–2 structures, 29898 if 3 or more.",
+        doc:"Document each intra-articular finding and treatment separately: anterior synovitis debrided, osteophyte excised, chondroplasty performed."
+      },
+      {
+        label:"Brostrom + Peroneal Tendon Repair",
+        badge:"green",
+        codes:[
+          {code:"27695", mod:"", desc:"Ankle ligament repair (Brostrom)"},
+          {code:"+", mod:"", desc:""},
+          {code:"27675", mod:"-51", desc:"Peroneal tendon repair (without fibular osteotomy)"},
+        ],
+        rule:"Peroneal tendon pathology (tear, subluxation, groove deepening) addressed at the time of Brostrom repair is separately billable. Very common concurrent pathology — do not overlook billing for it.",
+        doc:"Document peroneal tendon tear/subluxation as separate pathology, SPR repair or groove deepening as separate surgical step from ligament repair."
+      },
+      {
+        label:"Brostrom + Osteochondral Lesion",
+        badge:"green",
+        codes:[
+          {code:"27695", mod:"", desc:"Ankle ligament repair (Brostrom)"},
+          {code:"+", mod:"", desc:""},
+          {code:"29891", mod:"-51", desc:"Excision OCD talus/tibia (arthroscopic)"},
+        ],
+        rule:"Osteochondral defect of the talus treated at the time of Brostrom is separately billable — either open or arthroscopically aided. Document defect size, location, and treatment (excision, microfracture, OCA).",
+        doc:"Document OCD grade, size, talar dome location, and treatment method as distinct from ligament work."
+      },
+    ]
+  },
+  {
+    title:"Elbow",
+    sub:"UCL and elbow procedure add-ons",
+    combos:[
+      {
+        label:"Tommy John + Ulnar Nerve Transposition",
+        badge:"gold",
+        codes:[
+          {code:"24346", mod:"", desc:"UCL reconstruction"},
+          {code:"+", mod:"", desc:""},
+          {code:"64718", mod:"-51", desc:"Ulnar nerve transposition at elbow"},
+        ],
+        rule:"Ulnar nerve transposition (subcutaneous, submuscular, or intramuscular) performed at the time of UCL reconstruction is separately billable and very commonly indicated. One of the most frequently missed add-ons in elbow surgery.",
+        doc:"Document ulnar nerve symptomatology preop, intraoperative nerve visualization, and transposition technique (subcutaneous vs submuscular)."
+      },
+      {
+        label:"Tommy John + Elbow Arthroscopy",
+        badge:"green",
+        codes:[
+          {code:"24346", mod:"", desc:"UCL reconstruction"},
+          {code:"+", mod:"", desc:""},
+          {code:"29838", mod:"-51", desc:"Elbow arthroscopy, extensive debridement"},
+        ],
+        rule:"Elbow arthroscopy performed at the same setting as UCL reconstruction to address posteromedial impingement, loose bodies, or VEO (valgus extension overload) is separately billable.",
+        doc:"Document intra-articular pathology (posteromedial osteophytes, chondromalacia, loose bodies) and arthroscopic treatment as distinct from open UCL work."
+      },
+      {
+        label:"Distal Biceps + Heterotopic Ossification Excision",
+        badge:"green",
+        codes:[
+          {code:"24342", mod:"", desc:"Distal biceps reinsertion"},
+          {code:"+", mod:"", desc:""},
+          {code:"24685", mod:"-51", desc:"Open treatment proximal ulna (HO excision)"},
+        ],
+        rule:"Heterotopic ossification or proximal radioulnar synostosis excised at time of distal biceps repair can be billed separately when it constitutes a distinct and significant surgical step.",
+        doc:"Document HO location, size, and excision as a separate step from tendon reinsertion."
+      },
+    ]
+  },
+  {
+    title:"General Documentation Principles",
+    sub:"What your op note must include to support every add-on code",
+    combos:[
+      {
+        label:"The Golden Rules of Surgical Billing",
+        badge:"green",
+        codes:[],
+        rule:"<strong>1. If you didn't document it, you didn't do it.</strong> Every separately billed code needs its own paragraph in your op note — not a passing mention.<br><br><strong>2. Document each structure separately.</strong> For extensive debridement (29823, 29898), name each of the 3+ structures treated on separate lines.<br><br><strong>3. Use operative dictation templates.</strong> Build a template for your most common cases with billing prompts built in. This is the single highest-yield practice change.<br><br><strong>4. Don't wait until after surgery.</strong> If you know preoperatively you'll be doing a Brostrom + scope + peroneal repair, plan your dictation to capture all three.<br><br><strong>5. Modifiers matter.</strong> Missing a -59 or -51 modifier is as costly as missing the code entirely — the claim will be denied or bundled.<br><br><strong>6. Audit yourself quarterly.</strong> Have your biller pull your top 10 procedures and compare billed codes to what peers are billing for similar cases. Revenue gaps usually reveal undercoding patterns.",
+        doc:""
+      },
+      {
+        label:"Preoperative Planning Checklist",
+        badge:"gold",
+        codes:[],
+        rule:"Before every case, run through this mentally:<br><br>✓ <strong>Primary procedure</strong> — what is the main code?<br>✓ <strong>Associated pathology</strong> — what else will I address? (meniscus, biceps, labrum, nerve, tuberosity)<br>✓ <strong>Grafts and implants</strong> — are any separately documentable?<br>✓ <strong>Modifiers needed</strong> — -51 for multiple, -59 for distinct, -LT/-RT for side<br>✓ <strong>Payer-specific rules</strong> — does this payer bundle anything I plan to bill?<br>✓ <strong>Dictation plan</strong> — what specific language will I use for each code?",
+        doc:""
+      },
+    ]
+  },
+];
+
+function buildOpt() {
+  var el = document.getElementById('optContent');
+  el.innerHTML = OPT.map(function(s, si) {
+    return '<div class="opt-section" id="os-'+si+'">'
+      + '<div class="opt-head" onclick="toggleOs('+si+')">'
+      + '<div class="opt-head-left"><div class="opt-title">'+s.title+'</div><div class="opt-sub">'+s.sub+'</div></div>'
+      + '<span class="opt-chev">▼</span>'
+      + '</div>'
+      + '<div class="opt-body">'
+      + s.combos.map(function(c) {
+          var badgeClass = c.badge === 'gold' ? 'badge-gold' : 'badge-green';
+          var badgeLabel = c.badge === 'gold' ? '★ High Value' : '✓ Common Add-on';
+          return '<div class="stack">'
+            + '<div class="stack-title"><span>'+c.label+'</span><span class="'+badgeClass+'">'+badgeLabel+'</span></div>'
+            + (c.codes.length ? '<div class="code-stack">'
+              + c.codes.map(function(item) {
+                  if (item.code === '+') return '<span class="cs-plus">+</span>';
+                  return '<div class="cs-item"><span class="cs-code">'+item.code+'</span>'
+                    + (item.mod ? '<span class="cs-mod">'+item.mod+'</span>' : '')
+                    + '<span class="cs-desc">'+item.desc+'</span></div>';
+                }).join('') + '</div>' : '')
+            + '<div class="stack-rule">'+c.rule+'</div>'
+            + (c.doc ? '<div class="stack-doc"><strong>📝 Document:</strong> '+c.doc+'</div>' : '')
+            + '</div>';
+        }).join('')
+      + '</div></div>';
+  }).join('');
+  toggleOs(0);
+}
+
+function toggleOs(i) {
+  var el = document.getElementById('os-'+i);
+  if (el) el.classList.toggle('open');
+}
+
+// ---- INIT ----
 render();
 updateStats();
 </script>
